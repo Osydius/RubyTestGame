@@ -7,9 +7,12 @@ class GUITestWindow < FXMainWindow
 	def initialize(app, title, width, height)
 		super(app, title, :opts => DECOR_ALL, :width => width, :height => height)
 
-		@icon_folder_open   = makeIcon("minifolderopen.png")
-    @icon_folder_closed = makeIcon("minifolder.png")
-    @icon_doc           = makeIcon("minidoc.png")
+		@icon_folder_open   = makeIcon("icons/minifolderopen.png")
+    @icon_folder_closed = makeIcon("icons/minifolder.png")
+    @icon_doc           = makeIcon("icons/minidoc.png")
+
+    @characterIcons = Hash.new
+    createCharacterIcons()
 
     @directoryHash = Hash.new
     @directoryTree
@@ -118,7 +121,6 @@ class GUITestWindow < FXMainWindow
 
 	def makeIcon(filename)
     begin
-      filename = File.join("icons", filename)
       icon = nil
       File.open(filename, "rb") do |f|
         icon = FXPNGIcon.new(getApp(), f.read)
@@ -162,8 +164,36 @@ class GUITestWindow < FXMainWindow
   end
 
   def add_game_area(group)
-    @gameArea = FXText.new(group, :opts => TEXT_WORDWRAP|LAYOUT_FILL)
-    @gameArea.text = ""
+    #User Profile
+    FXLabel.new(group, "Profile", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
+    @logo = FXPNGImage.new(getApp(), File.open("characterPictures/cando.png", "rb").read, :opts => IMAGE_KEEP)
+    image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
+    @logo.scale(174, 174)
+
+    #Experience
+    FXLabel.new(group, "Experience", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 16, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
+    @experienceTarget = FXDataTarget.new(50)
+    FXProgressBar.new(group, @experienceTarget, FXDataTarget::ID_VALUE, (LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK|PROGRESSBAR_PERCENTAGE|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW))
+
+    #Currency
+    horframe = FXHorizontalFrame.new(group, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
+    FXLabel.new(horframe, "Currency", nil, JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 12, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
+    FXTextField.new(horframe, 0, @experienceTarget, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X)
+
+    # Ability Points
+    horframe = FXHorizontalFrame.new(group, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
+    FXLabel.new(horframe, "Ability Points", nil, JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 12, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
+    FXTextField.new(horframe, 0, @experienceTarget, FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X)
+
+    #Last Badge Earned
+    FXButton.new(group, "Last Badge Earned", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+
+    #Avatar Customisation
+    FXButton.new(group, "Avatar Customisation", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+
+    #Avatar Shop
+    FXButton.new(group, "Avatar Store", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+
   end
 
   def newDirectory(currentDirectory, currentLevel)
@@ -204,6 +234,10 @@ class GUITestWindow < FXMainWindow
         @numberTxt.text = @numberTxt.text + i.to_s + "\n"
       end
     end
+  end
+
+  def createCharacterIcons()
+    @characterIcons["cando"] = makeIcon("characterPictures/cando.png")
   end
 end
 
