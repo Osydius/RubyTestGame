@@ -3,7 +3,7 @@ require 'tree'
 require 'pathname'
 include Fox
 
-class GUITestWindow < FXMainWindow
+class GUIWindow < FXMainWindow
 	def initialize(app, title, width, height)
 		super(app, title, :opts => DECOR_ALL, :width => width, :height => height)
 
@@ -16,6 +16,10 @@ class GUITestWindow < FXMainWindow
 
     @directoryHash = Hash.new
     @directoryTree
+
+    @users = Array.new
+    @currentUser = Hash.new
+
 		add_menu_bar
 		add_status_bar
 		add_splitter_area
@@ -31,10 +35,10 @@ class GUITestWindow < FXMainWindow
 	private
 	def add_menu_bar
 
-		#Create new menu bar
+		#Create menu bar
 		menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)  
 
-		#Create new file menu
+		#Create file menu
     file_menu = FXMenuPane.new(self)  
     FXMenuTitle.new(menu_bar, "File", :popupMenu => file_menu)
 
@@ -44,7 +48,7 @@ class GUITestWindow < FXMainWindow
       @mainTxt.text = ""   
     end
 
-    #Load Commands
+    #Load Commands 
     FXMenuSeparator.new(file_menu) 
 
     load_cmd = FXMenuCommand.new(file_menu, "Load File")  
@@ -78,10 +82,73 @@ class GUITestWindow < FXMainWindow
     FXMenuSeparator.new(file_menu)  
 
     exit_cmd = FXMenuCommand.new(file_menu, "Exit")  
-    exit_cmd.connect(SEL_COMMAND) do  
+    exit_cmd.connect(SEL_COMMAND) do
       exit  
-    end  
+    end 
+
+    #Create user profile menu
+    @user_menu = FXMenuPane.new(self)  
+    FXMenuTitle.new(menu_bar, "Users", :popupMenu => @user_menu)
+
+    create_new_user_cmd = FXMenuCommand.new(@user_menu, "Create a new user")
+    create_new_user_cmd.connect(SEL_COMMAND) do
+      result = FXInputDialog.getString("",app,"Create New User","Enter a username")
+      if result
+        is_new_user = true
+        @users.each do |user|
+          if user["user_name"].downcase == result.downcase
+            is_new_user = false
+          end
+        end
+
+        if is_new_user
+          new_user = Hash["user_name", result]
+          @users.push(new_user)
+
+          update_current_user(new_user["user_name"])
+        end
+      end
+    end
+
+    @user_select_menu = FXMenuPane.new(@user_menu)
+    FXMenuCascade.new(@user_menu, "Select User", :popupMenu => @user_select_menu)
+    no_user_exists = FXMenuCommand.new(@user_select_menu, "No Users Exist")
 	end
+
+  def update_current_user(userName)
+    if !@currentUser.empty?
+      old_user = @currentUser
+      @user_menu.removeChild(@user_menu.childAtIndex(2))
+    end
+
+    @users.each do |user|
+      if user["user_name"] == userName
+        @currentUser = user
+      end
+    end
+
+    @user_select_menu.children.each do |user_select|
+      @user_select_menu.removeChild(user_select)
+    end
+
+    @users.each do |user|
+      x_select_user = FXMenuCommand.new(@user_select_menu, user["user_name"])
+      x_select_user.connect(SEL_COMMAND) do |sender, sel, ptr|
+        update_current_user(sender.to_s)
+      end
+    end
+
+    @user_select_menu.create
+    @user_select_menu.recalc
+
+    select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
+    select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
+      #create edit dialog
+    end
+
+    @user_menu.create
+    @user_menu.recalc
+  end
 
 	def load_file(filename)  
 	  contents = ""
@@ -137,10 +204,12 @@ class GUITestWindow < FXMainWindow
   end
 
   def add_splitter_area
-  	@splitter = FXSplitter.new(self, (LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_REVERSED))
-    group1 = FXVerticalFrame.new(@splitter,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 100)
-    group2 = FXHorizontalFrame.new(@splitter,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 750)
-    group3 = FXVerticalFrame.new(@splitter,FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 174)
+  	@splitter1 = FXSplitter.new(self, :opts => LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_REVERSED)
+    group1 = FXVerticalFrame.new(@splitter1, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 100)
+
+    @splitter2 = FXSplitter.new(@splitter1, :opts => LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_REVERSED)
+    group2 = FXHorizontalFrame.new(@splitter2, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 750)
+    group3 = FXVerticalFrame.new(@splitter2, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y, :width => 174)
 
     add_tree_area(group1)
     add_text_area(group2)
@@ -158,9 +227,7 @@ class GUITestWindow < FXMainWindow
 
   	@mainTxt = FXText.new(group, :opts => TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL|LAYOUT_FILL|VSCROLLER_NEVER)  
 		@mainTxt.text = ""
-    @mainTxt.connect(SEL_CHANGED, method(:updateLineNumbers))
-
-    
+    @mainTxt.connect(SEL_CHANGED, method(:updateLineNumbers)) 
   end
 
   def add_game_area(group)
@@ -193,7 +260,6 @@ class GUITestWindow < FXMainWindow
 
     #Avatar Shop
     FXButton.new(group, "Avatar Store", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
-
   end
 
   def newDirectory(currentDirectory, currentLevel)
@@ -244,7 +310,7 @@ end
 #Run code if not being used as a requirement
 if __FILE__ == $0
 	app = FXApp.new
-	GUITestWindow.new(app, "GUI Test", 1024, 600)
+	GUIWindow.new(app, "GUI", 1024, 800)
 	app.create
 	app.run
 end
