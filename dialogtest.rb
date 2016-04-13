@@ -7,6 +7,9 @@ include Fox
 # A little dialog box to use in our tests
 class FXTestDialog < FXDialogBox
 
+  attr_accessor :dialogEntry
+  attr_accessor :menuEntry
+
   def initialize(owner)
     # Invoke base class initialize function first
     super(owner, "Test of Dialog Box", DECOR_TITLE|DECOR_BORDER)
@@ -19,6 +22,9 @@ class FXTestDialog < FXDialogBox
     # Separator
     FXHorizontalSeparator.new(self,
       LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
+
+    #My thing
+    @dialogEntry = FXTextField.new(self, 100, )
   
     # Contents
     contents = FXHorizontalFrame.new(self,
@@ -43,7 +49,7 @@ class FXTestDialog < FXDialogBox
     end
   
     # Option menu
-    FXOptionMenu.new(contents, pane, (FRAME_RAISED|FRAME_THICK|
+    @menuEntry = FXOptionMenu.new(contents, pane, (FRAME_RAISED|FRAME_THICK|
       JUSTIFY_HZ_APART|ICON_AFTER_TEXT|LAYOUT_CENTER_X|LAYOUT_CENTER_Y))
 
     # Button to pop menu
@@ -115,9 +121,11 @@ class DialogTester < FXMainWindow
 
   # Show a modal dialog
   def onCmdShowDialogModal(sender, sel, ptr)
-    result = FXTestDialog.new(self).execute
-    puts sender
-    puts result
+    result = FXTestDialog.new(self)
+    if result.execute != 0
+      puts result.dialogEntry
+      puts result.menuEntry
+    end
     return 1
   end
 

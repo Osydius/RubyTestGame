@@ -1,7 +1,10 @@
 require 'fox16'
 require 'tree'
 require 'pathname'
+require 'yaml'
 include Fox
+
+require_relative 'editUserDialog'
 
 class GUIWindow < FXMainWindow
 	def initialize(app, title, width, height)
@@ -20,9 +23,28 @@ class GUIWindow < FXMainWindow
     @users = Array.new
     @currentUser = Hash.new
 
+
+    new_users = Array.new
+    new_users = YAML.load(File.read('users/userInfo.yml'))
+    if new_users != false
+      new_users.each do |new_user|
+        @users.push(new_user)
+      end
+      @currentUser = @users[0]
+      @users.each do |user|
+        if @currentUser["last_logged"] < user["last_logged"]
+          @currentUser = user
+        end
+      end
+    end
+
 		add_menu_bar
 		add_status_bar
 		add_splitter_area
+
+    self.connect(SEL_CLOSE) do
+      on_close
+    end
 
 		
 	end
@@ -83,7 +105,7 @@ class GUIWindow < FXMainWindow
 
     exit_cmd = FXMenuCommand.new(file_menu, "Exit")  
     exit_cmd.connect(SEL_COMMAND) do
-      exit  
+      on_close 
     end 
 
     #Create user profile menu
@@ -102,7 +124,8 @@ class GUIWindow < FXMainWindow
         end
 
         if is_new_user
-          new_user = Hash["user_name", result]
+          new_user = Hash["user_name", result, "character", "cando", "expereience", 100]
+          new_user["last_logged"] = Time.now.utc
           @users.push(new_user)
 
           update_current_user(new_user["user_name"])
@@ -112,7 +135,29 @@ class GUIWindow < FXMainWindow
 
     @user_select_menu = FXMenuPane.new(@user_menu)
     FXMenuCascade.new(@user_menu, "Select User", :popupMenu => @user_select_menu)
-    no_user_exists = FXMenuCommand.new(@user_select_menu, "No Users Exist")
+    
+    if @users.length > 0
+      @users.each do |user|
+        x_select_user = FXMenuCommand.new(@user_select_menu, user["user_name"])
+        x_select_user.connect(SEL_COMMAND) do |sender, sel, ptr|
+          update_current_user(sender.to_s)
+        end
+      end
+    else
+      no_user_exists = FXMenuCommand.new(@user_select_menu, "No Users Exist")
+    end
+
+    if !@currentUser.empty?
+      select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
+      select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
+        #create edit dialog
+        editUser = EditUserDialog.new(self, @currentUser)
+        if editUser.execute != 0
+          @currentUser["user_name"] = editUser.newUserName.text
+          update_current_user(@currentUser["user_name"])
+        end
+      end
+    end
 	end
 
   def update_current_user(userName)
@@ -124,6 +169,7 @@ class GUIWindow < FXMainWindow
     @users.each do |user|
       if user["user_name"] == userName
         @currentUser = user
+        @currentUser["last_logged"] = Time.now.utc
       end
     end
 
@@ -144,6 +190,11 @@ class GUIWindow < FXMainWindow
     select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
     select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
       #create edit dialog
+      editUser = EditUserDialog.new(self, @currentUser)
+      if editUser.execute != 0
+        @currentUser["user_name"] = editUser.newUserName.text
+        update_current_user(@currentUser["user_name"])
+      end
     end
 
     @user_menu.create
@@ -304,6 +355,15 @@ class GUIWindow < FXMainWindow
 
   def createCharacterIcons()
     @characterIcons["cando"] = makeIcon("characterPictures/cando.png")
+  end
+
+  def on_close()
+    if @users.length != 0
+      users_directory = "users"
+      Dir.mkdir(users_directory) unless File.exists?(users_directory)
+      File.open(users_directory + '/userInfo.yml', 'w+') {|f| f.write(YAML.dump(@users)) }
+    end
+    getApp().exit(0)
   end
 end
 
