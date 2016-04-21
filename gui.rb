@@ -53,7 +53,7 @@ class GUIWindow < FXMainWindow
     @userCurrencyDataTarget = FXDataTarget.new(0)
     @userAbilityPointsDataTarget = FXDataTarget.new(0)
     if(!@currentUser.empty?)
-      @userExperienceDataTarget.value = @currentUser["user_experience"]
+      @userExperienceDataTarget.value = @currentUser["user_experience"].to_i
       @userCurrencyDataTarget.value = @currentUser["user_currency"]
       @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
     end
@@ -143,7 +143,7 @@ class GUIWindow < FXMainWindow
 
         if is_new_user
           new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
-          new_user = Hash["user_name", result, "user_character", "cando", "user_experience", 0, "user_currency", 0, "user_abilityPoints", 0, "user_lastTestRun", new_user_test_data]
+          new_user = Hash["user_name", result, "user_character", "cando", "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0, "user_abilityPoints", 0, "user_lastTestRun", new_user_test_data]
           new_user["last_logged"] = Time.now.utc
           @users.push(new_user)
 
@@ -179,28 +179,18 @@ class GUIWindow < FXMainWindow
 
       FXVerticalSeparator.new(self, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
 
-    #Crate a button that runs the current test
-    run_menu_command = FXMenuCommand.new(self, "Run Tests")
-    run_menu_command.connect(SEL_COMMAND) do
-      # @currentUser["user_experience"] += 1
-      # @currentUser["user_currency"] += 100
-      # @currentUser["user_abilityPoints"] += 10
-
-      # @userExperienceDataTarget.value = @currentUser["user_experience"]
-      # @userCurrencyDataTarget.value = @currentUser["user_currency"]
-      # @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
-
+      #Create a button that runs the current test
+      run_menu_command = FXMenuCommand.new(self, "Run Tests")
+      run_menu_command.connect(SEL_COMMAND) do
       testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
       if(testResult)
         if(File.exist?("coverage"))
           if(File.exist?("coverage/rspecResult.yml"))
             # Getting rspec results
             newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
-            #puts newRspecResults[:summary]
 
             # Getting simplecov results
             newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
-            #puts newSimpleCovResults["metrics"]
 
             calculateTestScore(newRspecResults, newSimpleCovResults)
           else
@@ -210,8 +200,6 @@ class GUIWindow < FXMainWindow
           puts "couldn't find rspec result directory"
         end
       end
-
-
     end
 	end
 
@@ -244,7 +232,7 @@ class GUIWindow < FXMainWindow
 
     @gameArea.childAtIndex(0).text = @currentUser["user_name"]
 
-    @userExperienceDataTarget.value = @currentUser["user_experience"]
+    @userExperienceDataTarget.value = @currentUser["user_experience"].to_i
     @userCurrencyDataTarget.value = @currentUser["user_currency"]
     @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
 
@@ -267,8 +255,66 @@ class GUIWindow < FXMainWindow
   end
 end
 
-  def calculateTestScore(rspecResults, simpleCovResutls)
+  def calculateTestScore(rspecResults, simpleCovResults)
+    oldRspecResults = @currentUser["user_lastTestRun"]["user_lastTestResult"]
+    oldSimpleCovResults = @currentUser["user_lastTestRun"]["user_lastCoverageResult"]
 
+    currentScore = 0
+
+    if(!oldRspecResults.empty?)
+      # Calculate difference in total tests ran
+      totalTestsRan = rspecResults[:summary][:example_count]
+      ranTestDifference = totalTestsRan - oldRspecResults[:summary][:example_count]
+      if(ranTestDifference > 0)
+        currentScore += 10
+      elsif(ranTestDifference == 0)
+        currentScore = currentScore
+      else
+        currentScore -= 10
+      end
+
+      @currentUser["user_lastTestRun"]["user_lastTestResult"] = rspecResults
+      @currentUser["user_lastTestRun"]["user_lastCoverageResult"] = simpleCovResults
+    else
+      @currentUser["user_lastTestRun"]["user_lastTestResult"] = rspecResults
+      @currentUser["user_lastTestRun"]["user_lastCoverageResult"] = simpleCovResults
+    end
+
+    if(currentScore != 0)
+      updateUserScores(currentScore)
+    end
+  end
+
+  def updateUserScores(score)
+    @currentUser["user_experience"] += calculateNewUserExperience(score)
+    @currentUser["user_currency"] += calculateNewUserCurrency(score)
+    @currentUser["user_abilityPoints"] += calculcateNewUserAbilityPoints(score)
+
+    update_current_user(@currentUser["user_name"])
+  end
+
+  def calculateNewUserExperience(score)
+    currentExperience = 0.0
+
+    currentExperience = score/20.to_f
+
+    return currentExperience
+  end
+
+  def calculateNewUserCurrency(score)
+    currentCurrency = 0
+
+    currentCurrency = score * 10
+
+    return currentCurrency
+  end
+
+  def calculcateNewUserAbilityPoints(score)
+    currentAbilityPoints = 0
+
+    currentAbilityPoints = score/10
+
+    return currentAbilityPoints
   end
 
 	def load_file(filename)
