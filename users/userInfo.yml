@@ -2,9 +2,9 @@
 - user_name: James
   user_character: cando
   user_characterHealth: 100
-  user_experience: 38.5
-  user_currency: 6900
-  user_abilityPoints: 69
+  user_experience: 0.0
+  user_currency: 0
+  user_abilityPoints: 0
   user_lastTestRun:
     user_lastTestResult:
       :version: 3.4.4
@@ -15,7 +15,7 @@
         :status: passed
         :file_path: "./exampleTests/rspecTest.rspec"
         :line_number: 5
-        :run_time: 0.001
+        :run_time: 0.0005
         :pending_message: 
       - :description: return the instance variable 'testAnotherVariable'
         :full_description: "#rubyTest Getting test variables return the instance variable
@@ -31,7 +31,7 @@
         :status: passed
         :file_path: "./exampleTests/rspecTest.rspec"
         :line_number: 19
-        :run_time: 0.0
+        :run_time: 0.0005
         :pending_message: 
       - :description: sets the instance variable 'setTestVariable
         :full_description: "#rubyTest Setting test variables sets the instance variable
@@ -48,7 +48,7 @@
         :pending_count: 0
       :summary_line: 4 examples, 0 failures
     user_lastCoverageResult:
-      timestamp: 1461249207
+      timestamp: 1461250929
       command_name: RSpec
       files:
       - filename: E:/GitRepositories/RubyTestGame/exampleTests/rspecTest.rspec
@@ -227,4 +227,4 @@
         covered_strength: 1.2052631578947368
         covered_lines: 38
         total_lines: 38
-  last_logged: 2016-04-21 14:33:23.495590000 Z
+  last_logged: 2016-04-21 15:02:04.284238000 Z

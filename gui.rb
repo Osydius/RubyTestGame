@@ -76,11 +76,11 @@ class GUIWindow < FXMainWindow
 	def add_menu_bar
 
 		#Create menu bar
-		menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
+		@main_menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
 
 		#Create file menu
     file_menu = FXMenuPane.new(self)
-    FXMenuTitle.new(menu_bar, "File", :popupMenu => file_menu)
+    FXMenuTitle.new(@main_menu_bar, "File", :popupMenu => file_menu)
 
     #New Command
     new_cmd = FXMenuCommand.new(file_menu, "New")
@@ -128,7 +128,7 @@ class GUIWindow < FXMainWindow
 
     #Create user profile menu
     @user_menu = FXMenuPane.new(self)
-    FXMenuTitle.new(menu_bar, "Users", :popupMenu => @user_menu)
+    FXMenuTitle.new(@main_menu_bar, "Users", :popupMenu => @user_menu)
 
     create_new_user_cmd = FXMenuCommand.new(@user_menu, "Create a new user")
     create_new_user_cmd.connect(SEL_COMMAND) do
@@ -177,31 +177,32 @@ class GUIWindow < FXMainWindow
         end
       end
 
-      FXVerticalSeparator.new(self, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
+      #FXMenuSeparator.new(menu_bar, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
 
       #Create a button that runs the current test
-      run_menu_command = FXMenuCommand.new(self, "Run Tests")
+      run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
       run_menu_command.connect(SEL_COMMAND) do
-      testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
-      if(testResult)
-        if(File.exist?("coverage"))
-          if(File.exist?("coverage/rspecResult.yml"))
-            # Getting rspec results
-            newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+        testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
+        if(testResult)
+          if(File.exist?("coverage"))
+            if(File.exist?("coverage/rspecResult.yml"))
+              # Getting rspec results
+              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
 
-            # Getting simplecov results
-            newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+              # Getting simplecov results
+              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
 
-            calculateTestScore(newRspecResults, newSimpleCovResults)
+              calculateTestScore(newRspecResults, newSimpleCovResults)
+            else
+              puts "couldn't find rspec result file"
+            end
           else
-            puts "couldn't find rspec result file"
+            puts "couldn't find rspec result directory"
           end
-        else
-          puts "couldn't find rspec result directory"
         end
       end
     end
-	end
+  end
 
   def update_current_user(userName)
     if !@currentUser.empty?
@@ -247,13 +248,38 @@ class GUIWindow < FXMainWindow
       end
     end
 
+    #Create a button that runs the current test
+    run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
+    run_menu_command.connect(SEL_COMMAND) do
+      testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
+      if(testResult)
+        if(File.exist?("coverage"))
+          if(File.exist?("coverage/rspecResult.yml"))
+            # Getting rspec results
+            newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+
+            # Getting simplecov results
+            newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+
+            calculateTestScore(newRspecResults, newSimpleCovResults)
+          else
+            puts "couldn't find rspec result file"
+          end
+        else
+          puts "couldn't find rspec result directory"
+        end
+      end
+    end
+
+    @main_menu_bar.create
+    @main_menu_bar.recalc
+
     @user_menu.create
     @user_menu.recalc
 
     @gameArea.create
     @gameArea.recalc
   end
-end
 
   def calculateTestScore(rspecResults, simpleCovResults)
     oldRspecResults = @currentUser["user_lastTestRun"]["user_lastTestResult"]
