@@ -1,4 +1,5 @@
 require 'fox16'
+require 'fox16/colors'
 require 'tree'
 require 'pathname'
 require 'yaml'
@@ -7,6 +8,7 @@ include Fox
 require_relative 'editUserDialog'
 
 class GUIWindow < FXMainWindow
+
 	def initialize(app, title, width, height)
 		super(app, title, :opts => DECOR_ALL, :width => width, :height => height)
 
@@ -21,21 +23,39 @@ class GUIWindow < FXMainWindow
     @directoryTree
 
     @users = Array.new
+
+    #Add blank user
     @currentUser = Hash.new
 
-
+    #------------------------------#
+    # ADD USERS FROM SAVE FILE #
     new_users = Array.new
-    new_users = YAML.load(File.read('users/userInfo.yml'))
-    if new_users != false
-      new_users.each do |new_user|
-        @users.push(new_user)
-      end
-      @currentUser = @users[0]
-      @users.each do |user|
-        if @currentUser["last_logged"] < user["last_logged"]
-          @currentUser = user
+    if(File.exist?("users"))
+      if(File.exist?("users/userInfo.yml"))
+        new_users = YAML.load(File.read('users/userInfo.yml'))
+        if new_users != false
+          new_users.each do |new_user|
+            @users.push(new_user)
+          end
+          @currentUser = @users[0]
+          @users.each do |user|
+            if @currentUser["last_logged"] < user["last_logged"]
+              @currentUser = user
+            end
+          end
         end
       end
+    end
+
+    #------------------------------#
+    # ADD USER TO CURRENT USER #
+    @userExperienceDataTarget = FXDataTarget.new(0)
+    @userCurrencyDataTarget = FXDataTarget.new(0)
+    @userAbilityPointsDataTarget = FXDataTarget.new(0)
+    if(!@currentUser.empty?)
+      @userExperienceDataTarget.value = @currentUser["user_experience"]
+      @userCurrencyDataTarget.value = @currentUser["user_currency"]
+      @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
     end
 
 		add_menu_bar
@@ -45,8 +65,6 @@ class GUIWindow < FXMainWindow
     self.connect(SEL_CLOSE) do
       on_close
     end
-
-		
 	end
 
 	def create
@@ -58,29 +76,29 @@ class GUIWindow < FXMainWindow
 	def add_menu_bar
 
 		#Create menu bar
-		menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)  
+		menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
 
 		#Create file menu
-    file_menu = FXMenuPane.new(self)  
+    file_menu = FXMenuPane.new(self)
     FXMenuTitle.new(menu_bar, "File", :popupMenu => file_menu)
 
-    #New Command  
-    new_cmd = FXMenuCommand.new(file_menu, "New")  
-    new_cmd.connect(SEL_COMMAND) do  
-      @mainTxt.text = ""   
+    #New Command
+    new_cmd = FXMenuCommand.new(file_menu, "New")
+    new_cmd.connect(SEL_COMMAND) do
+      @mainTxt.text = ""
     end
 
-    #Load Commands 
-    FXMenuSeparator.new(file_menu) 
+    #Load Commands
+    FXMenuSeparator.new(file_menu)
 
-    load_cmd = FXMenuCommand.new(file_menu, "Load File")  
-    load_cmd.connect(SEL_COMMAND) do  
-      dialog = FXFileDialog.new(self, "Load a File")  
-      dialog.selectMode = SELECTFILE_EXISTING  
-      dialog.patternList = ["All Files (*)"]  
-      if dialog.execute != 0  
-        load_file(dialog.filename)  
-      end  
+    load_cmd = FXMenuCommand.new(file_menu, "Load File")
+    load_cmd.connect(SEL_COMMAND) do
+      dialog = FXFileDialog.new(self, "Load a File")
+      dialog.selectMode = SELECTFILE_EXISTING
+      dialog.patternList = ["All Files (*)"]
+      if dialog.execute != 0
+        load_file(dialog.filename)
+      end
     end
 
     load_folder_cmd = FXMenuCommand.new(file_menu, "Load Folder")
@@ -92,24 +110,24 @@ class GUIWindow < FXMainWindow
     end
 
     #Save Commands
-    FXMenuSeparator.new(file_menu) 
+    FXMenuSeparator.new(file_menu)
 
-    save_cmd = FXMenuCommand.new(file_menu, "Save")  
-    save_cmd.connect(SEL_COMMAND) do  
+    save_cmd = FXMenuCommand.new(file_menu, "Save")
+    save_cmd.connect(SEL_COMMAND) do
       dialog = FXFileDialog.getSaveFilename(self, "Save a File", "")
-      save_file(dialog)  
-    end  
+      save_file(dialog)
+    end
 
     #Exit Command
-    FXMenuSeparator.new(file_menu)  
+    FXMenuSeparator.new(file_menu)
 
-    exit_cmd = FXMenuCommand.new(file_menu, "Exit")  
+    exit_cmd = FXMenuCommand.new(file_menu, "Exit")
     exit_cmd.connect(SEL_COMMAND) do
-      on_close 
-    end 
+      on_close
+    end
 
     #Create user profile menu
-    @user_menu = FXMenuPane.new(self)  
+    @user_menu = FXMenuPane.new(self)
     FXMenuTitle.new(menu_bar, "Users", :popupMenu => @user_menu)
 
     create_new_user_cmd = FXMenuCommand.new(@user_menu, "Create a new user")
@@ -124,7 +142,8 @@ class GUIWindow < FXMainWindow
         end
 
         if is_new_user
-          new_user = Hash["user_name", result, "user_character", "cando", "user_experience", 0, "user_currency", 0, "user_abilityPoints", 0]
+          new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
+          new_user = Hash["user_name", result, "user_character", "cando", "user_experience", 0, "user_currency", 0, "user_abilityPoints", 0, "user_lastTestRun", new_user_test_data]
           new_user["last_logged"] = Time.now.utc
           @users.push(new_user)
 
@@ -135,7 +154,7 @@ class GUIWindow < FXMainWindow
 
     @user_select_menu = FXMenuPane.new(@user_menu)
     FXMenuCascade.new(@user_menu, "Select User", :popupMenu => @user_select_menu)
-    
+
     if @users.length > 0
       @users.each do |user|
         x_select_user = FXMenuCommand.new(@user_select_menu, user["user_name"])
@@ -151,20 +170,48 @@ class GUIWindow < FXMainWindow
       select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
       select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
         #create edit dialog
-        editUser = EditUserDialog.new(self, @currentUser)
+        editUser = EditUserDialog.new(self, @currentUser, @characterIcons)
         if editUser.execute != 0
           @currentUser["user_name"] = editUser.newUserName.text
           update_current_user(@currentUser["user_name"])
         end
       end
 
+      FXVerticalSeparator.new(self, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
+
+    #Crate a button that runs the current test
     run_menu_command = FXMenuCommand.new(self, "Run Tests")
-    run_menu_command.connect(SEL_COMMAND) do 
-      @userProgressBar.increment(1)
-      @currentUser["user_currency"] += 10
-      @currentUser["user_abilityPoints"] += 1
-      @userCurrencyDisplay.text = @currentUser["user_currency"].to_s
-      @userAbilityPointsDisplay.text = @currentUser["user_abilityPoints"].to_s
+    run_menu_command.connect(SEL_COMMAND) do
+      # @currentUser["user_experience"] += 1
+      # @currentUser["user_currency"] += 100
+      # @currentUser["user_abilityPoints"] += 10
+
+      # @userExperienceDataTarget.value = @currentUser["user_experience"]
+      # @userCurrencyDataTarget.value = @currentUser["user_currency"]
+      # @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
+
+      testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
+      if(testResult)
+        if(File.exist?("coverage"))
+          if(File.exist?("coverage/rspecResult.yml"))
+            # Getting rspec results
+            newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+            #puts newRspecResults[:summary]
+
+            # Getting simplecov results
+            newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+            #puts newSimpleCovResults["metrics"]
+
+            calculateTestScore(newRspecResults, newSimpleCovResults)
+          else
+            puts "couldn't find rspec result file"
+          end
+        else
+          puts "couldn't find rspec result directory"
+        end
+      end
+
+
     end
 	end
 
@@ -195,9 +242,11 @@ class GUIWindow < FXMainWindow
     @user_select_menu.create
     @user_select_menu.recalc
 
-    @userProgressBar.increment(@currentUser["user_experience"])
-    @userCurrencyDisplay.text = @currentUser["user_currency"].to_s
-    @userAbilityPointsDisplay.text = @currentUser["user_abilityPoints"].to_s
+    @gameArea.childAtIndex(0).text = @currentUser["user_name"]
+
+    @userExperienceDataTarget.value = @currentUser["user_experience"]
+    @userCurrencyDataTarget.value = @currentUser["user_currency"]
+    @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
 
     select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
     select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
@@ -205,26 +254,35 @@ class GUIWindow < FXMainWindow
       editUser = EditUserDialog.new(self, @currentUser)
       if editUser.execute != 0
         @currentUser["user_name"] = editUser.newUserName.text
+        @currentUser["user_currency"] = editUser.newUserCurrency.text.to_i
         update_current_user(@currentUser["user_name"])
       end
     end
 
     @user_menu.create
     @user_menu.recalc
+
+    @gameArea.create
+    @gameArea.recalc
+  end
+end
+
+  def calculateTestScore(rspecResults, simpleCovResutls)
+
   end
 
-	def load_file(filename)  
+	def load_file(filename)
 	  contents = ""
 
-	  if(File.exist?(filename))  
-		  File.open(filename, 'r') do |f1|  
-		    while line = f1.gets  
-		      contents += line  
-		    end  
+	  if(File.exist?(filename))
+		  File.open(filename, 'r') do |f1|
+		    while line = f1.gets
+		      contents += line
+		    end
 		  end
 		end
-	  @mainTxt.text = contents 
-    addLineNumbers() 
+	  @mainTxt.text = contents
+    addLineNumbers()
 	end
 
 	def load_folder(directory)
@@ -236,7 +294,7 @@ class GUIWindow < FXMainWindow
 
 	def save_file(filename)
 		begin
-			file = File.new(filename,"wb")			
+			file = File.new(filename,"wb")
 			file.print @mainTxt.text;
 			file.close;
 			puts "> Saved successfully."
@@ -272,11 +330,11 @@ class GUIWindow < FXMainWindow
 
     @splitter2 = FXSplitter.new(@splitter1, :opts => LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y|SPLITTER_TRACKING|SPLITTER_REVERSED, :width => 750)
     group2 = FXHorizontalFrame.new(@splitter2, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y)
-    @group3 = FXVerticalFrame.new(@splitter2, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y)
+    @gameArea = FXVerticalFrame.new(@splitter2, :opts => FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
     add_tree_area(group1)
     add_text_area(group2)
-    add_game_area(@group3)
+    add_game_area(@gameArea)
   end
 
   def add_tree_area(group)
@@ -288,33 +346,32 @@ class GUIWindow < FXMainWindow
     #textScrollArea = FXScrollArea.new(group, :opts => (LAYOUT_FILL_X|LAYOUT_FILL_Y|VSCROLLER_ALWAYS))
     @numberTxt = FXText.new(group, :opts => TEXT_READONLY|LAYOUT_FILL_Y|VSCROLLER_NEVER)
 
-  	@mainTxt = FXText.new(group, :opts => TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL|LAYOUT_FILL|VSCROLLER_NEVER)  
+  	@mainTxt = FXText.new(group, :opts => TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL|LAYOUT_FILL|VSCROLLER_NEVER)
 		@mainTxt.text = ""
-    @mainTxt.connect(SEL_CHANGED, method(:updateLineNumbers)) 
+    @mainTxt.connect(SEL_CHANGED, method(:updateLineNumbers))
   end
 
   def add_game_area(group)
     #User Profile
-    FXLabel.new(group, "Profile", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
+    FXLabel.new(group, @currentUser["user_name"], nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
     @logo = FXPNGImage.new(getApp(), File.open("characterPictures/cando.png", "rb").read, :opts => IMAGE_KEEP)
     image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
     @logo.scale(174, 174)
 
     #Experience
     FXLabel.new(group, "Experience", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 16, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
-    puts @currentUser
     #experienceTarget = FXDataTarget.new(@currentUser["user_experience"])
-    @userProgressBar = FXProgressBar.new(group, @ExperienceDataTarget, FXDataTarget::ID_VALUE, (LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK|PROGRESSBAR_PERCENTAGE|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW))
+    FXProgressBar.new(group, @userExperienceDataTarget, FXDataTarget::ID_VALUE, (LAYOUT_FILL_X|FRAME_SUNKEN|FRAME_THICK|PROGRESSBAR_PERCENTAGE|LAYOUT_FILL_COLUMN|LAYOUT_FILL_ROW))
 
     #Currency
     horframe = FXHorizontalFrame.new(group, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
     FXLabel.new(horframe, "Currency", nil, JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 12, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
-    @userCurrencyDisplay = FXTextField.new(horframe, 0, @currentUser["user_currency"], FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X)
+    currencyField = FXTextField.new(horframe, 0, @userCurrencyDataTarget, FXDataTarget::ID_VALUE, :opts => TEXTFIELD_READONLY|LAYOUT_FILL_X)
 
     # Ability Points
     horframe = FXHorizontalFrame.new(group, LAYOUT_SIDE_TOP | LAYOUT_FILL_X)
     FXLabel.new(horframe, "Ability Points", nil, JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 12, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
-    @userAbilityPointsDisplay = FXTextField.new(horframe, 0, @currentUser["user_abilityPoints"], FXDataTarget::ID_VALUE, FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X)
+    FXTextField.new(horframe, 0, @userAbilityPointsDataTarget, FXDataTarget::ID_VALUE, :opts => TEXTFIELD_READONLY|LAYOUT_FILL_X)
 
     #Last Badge Earned
     FXButton.new(group, "Last Badge Earned", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
@@ -344,13 +401,13 @@ class GUIWindow < FXMainWindow
   		else
   			@dirTree.appendItem(newLevel, childFileName, @icon_doc, @icon_doc)
   		end
-			
+
   	}
   end
 
   def treeSelection(sender, selector, data)
   	load_file(data.to_s)
-	end	
+	end
 
   def updateLineNumbers(sender, selector, data)
     addLineNumbers()
@@ -368,6 +425,7 @@ class GUIWindow < FXMainWindow
 
   def createCharacterIcons()
     @characterIcons["cando"] = makeIcon("characterPictures/cando.png")
+    @characterIcons["digard"] = makeIcon("characterPictures/digard.png")
   end
 
   def on_close()

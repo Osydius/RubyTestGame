@@ -1,13 +1,46 @@
 ---
 - user_name: James
-  character: cando
-  expereience: 100
-  last_logged: 2016-03-23 16:51:09.813404000 Z
+  user_character: cando
+  user_experience: 9
+  user_currency: 1000
+  user_abilityPoints: 90
+  last_logged: 2016-04-14 11:43:15.263544000 Z
+  user_lastTestRun:
+    :version: 3.4.4
+    :examples:
+    - :description: returns the instance variable 'testVariable'
+      :full_description: "#rubyTest Getting test variables returns the instance variable
+        'testVariable'"
+      :status: passed
+      :file_path: "./exampleTests/rspecTest.rspec"
+      :line_number: 5
+      :run_time: 0.001
+      :pending_message: 
+    - :description: return the instance variable 'testAnotherVariable'
+      :full_description: "#rubyTest Getting test variables return the instance variable
+        'testAnotherVariable'"
+      :status: passed
+      :file_path: "./exampleTests/rspecTest.rspec"
+      :line_number: 11
+      :run_time: 0.0
+      :pending_message: 
+    - :description: sets the instance variable 'setTestAnotherVariable
+      :full_description: "#rubyTest Setting test variables sets the instance variable
+        'setTestAnotherVariable"
+      :status: passed
+      :file_path: "./exampleTests/rspecTest.rspec"
+      :line_number: 19
+      :run_time: 0.0
+      :pending_message: 
+    :summary:
+      :duration: 0.001
+      :example_count: 3
+      :failure_count: 0
+      :pending_count: 0
+    :summary_line: 3 examples, 0 failures
 - user_name: Nicola
-  character: cando
-  expereience: 100
-  last_logged: 2016-03-23 16:51:11.619533000 Z
-- user_name: Dude
-  character: cando
-  expereience: 100
-  last_logged: 2016-03-23 16:51:17.220332000 Z
+  user_character: cando
+  user_experience: 0
+  user_currency: 0
+  user_abilityPoints: 0
+  last_logged: 2016-04-14 10:48:18.324280000 Z
