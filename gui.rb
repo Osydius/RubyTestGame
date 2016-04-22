@@ -6,6 +6,7 @@ require 'yaml'
 include Fox
 
 require_relative 'editUserDialog'
+require_relative 'userStore'
 
 class GUIWindow < FXMainWindow
 
@@ -54,8 +55,8 @@ class GUIWindow < FXMainWindow
     @userAbilityPointsDataTarget = FXDataTarget.new(0)
     if(!@currentUser.empty?)
       @userExperienceDataTarget.value = @currentUser["user_experience"].to_i
-      @userCurrencyDataTarget.value = @currentUser["user_currency"]
-      @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
+      @userCurrencyDataTarget.value = @currentUser["user_currency"].to_i
+      @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"].to_i
     end
 
 		add_menu_bar
@@ -143,7 +144,7 @@ class GUIWindow < FXMainWindow
 
         if is_new_user
           new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
-          new_user = Hash["user_name", result, "user_character", "cando", "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0, "user_abilityPoints", 0, "user_lastTestRun", new_user_test_data]
+          new_user = Hash["user_name", result, "user_character", "cando", "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0.0, "user_abilityPoints", 0.0, "user_lastTestRun", new_user_test_data]
           new_user["last_logged"] = Time.now.utc
           @users.push(new_user)
 
@@ -172,16 +173,26 @@ class GUIWindow < FXMainWindow
         #create edit dialog
         editUser = EditUserDialog.new(self, @currentUser, @characterIcons)
         if editUser.execute != 0
-          @currentUser["user_name"] = editUser.newUserName.text
-          update_current_user(@currentUser["user_name"])
+          if(editUser.deleteUser)
+            puts "want to delete user"
+          else
+            if(editUser.newUserCharacter != @currentUser["user_character"])
+              @currentUser["user_name"] = editUser.newUserName
+              @currentUser["user_character"] = editUser.newUserCharacter
+              resetUserProgress()
+            else
+              @currentUser["user_name"] = editUser.newUserName
+              update_current_user(@currentUser["user_name"])
+            end
+          end
         end
       end
 
       #FXMenuSeparator.new(menu_bar, LAYOUT_SIDE_BOTTOM|LAYOUT_FILL_X|SEPARATOR_GROOVE)
 
       #Create a button that runs the current test
-      run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
-      run_menu_command.connect(SEL_COMMAND) do
+      @run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
+      @run_menu_command.connect(SEL_COMMAND) do
         testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
         if(testResult)
           if(File.exist?("coverage"))
@@ -233,40 +244,57 @@ class GUIWindow < FXMainWindow
 
     @gameArea.childAtIndex(0).text = @currentUser["user_name"]
 
+    logo = FXPNGImage.new(getApp(), File.open("characterPictures/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+    logo.scale(174, 174)
+    @image.image = logo
+
     @userExperienceDataTarget.value = @currentUser["user_experience"].to_i
-    @userCurrencyDataTarget.value = @currentUser["user_currency"]
-    @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"]
+    @userCurrencyDataTarget.value = @currentUser["user_currency"].to_i
+    @userAbilityPointsDataTarget.value = @currentUser["user_abilityPoints"].to_i
 
     select_current_user_cmd = FXMenuCommand.new(@user_menu, "Current User: " + @currentUser["user_name"].to_s)
     select_current_user_cmd.connect(SEL_COMMAND) do |sender, selector, ptr|
       #create edit dialog
-      editUser = EditUserDialog.new(self, @currentUser)
+      editUser = EditUserDialog.new(self, @currentUser, @characterIcons)
       if editUser.execute != 0
-        @currentUser["user_name"] = editUser.newUserName.text
-        @currentUser["user_currency"] = editUser.newUserCurrency.text.to_i
-        update_current_user(@currentUser["user_name"])
+        if editUser.execute != 0
+          if(editUser.deleteUser)
+            puts "want to delete user"
+          else
+            if(editUser.newUserCharacter != @currentUser["user_character"])
+              @currentUser["user_name"] = editUser.newUserName
+              @currentUser["user_character"] = editUser.newUserCharacter
+              resetUserProgress()
+            else
+              @currentUser["user_name"] = editUser.newUserName
+              update_current_user(@currentUser["user_name"])
+            end
+          end
+        end
       end
     end
 
-    #Create a button that runs the current test
-    run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
-    run_menu_command.connect(SEL_COMMAND) do
-      testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
-      if(testResult)
-        if(File.exist?("coverage"))
-          if(File.exist?("coverage/rspecResult.yml"))
-            # Getting rspec results
-            newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+    if(!@run_menu_command)
+      #Create a button that runs the current test
+      @run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
+      @run_menu_command.connect(SEL_COMMAND) do
+        testResult = system 'ruby testRunner.rb exampleTests/rubyTest.rspec'
+        if(testResult)
+          if(File.exist?("coverage"))
+            if(File.exist?("coverage/rspecResult.yml"))
+              # Getting rspec results
+              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
 
-            # Getting simplecov results
-            newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+              # Getting simplecov results
+              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
 
-            calculateTestScore(newRspecResults, newSimpleCovResults)
+              calculateTestScore(newRspecResults, newSimpleCovResults)
+            else
+              puts "couldn't find rspec result file"
+            end
           else
-            puts "couldn't find rspec result file"
+            puts "couldn't find rspec result directory"
           end
-        else
-          puts "couldn't find rspec result directory"
         end
       end
     end
@@ -328,19 +356,24 @@ class GUIWindow < FXMainWindow
   end
 
   def calculateNewUserCurrency(score)
-    currentCurrency = 0
+    currentCurrency = 0.0
 
-    currentCurrency = score * 10
+    currentCurrency = score * 10.to_f
 
     return currentCurrency
   end
 
   def calculcateNewUserAbilityPoints(score)
-    currentAbilityPoints = 0
+    currentAbilityPoints = 0.0
 
-    currentAbilityPoints = score/10
+    currentAbilityPoints = score/10.to_f
 
     return currentAbilityPoints
+  end
+
+  def resetUserProgress()
+    new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
+    new_user = Hash["user_name", @currentUser["user_name"], "user_character", @currentUser["user_character"], "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0.0, "user_abilityPoints", 0.0, "user_lastTestRun", new_user_test_data]
   end
 
 	def load_file(filename)
@@ -426,9 +459,11 @@ class GUIWindow < FXMainWindow
   def add_game_area(group)
     #User Profile
     FXLabel.new(group, @currentUser["user_name"], nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
-    @logo = FXPNGImage.new(getApp(), File.open("characterPictures/cando.png", "rb").read, :opts => IMAGE_KEEP)
-    image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
-    @logo.scale(174, 174)
+    logo = FXPNGImage.new(getApp(), File.open("characterPictures/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+    @image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
+    logo.scale(174, 174)
+    @image.image = logo
+
 
     #Experience
     FXLabel.new(group, "Experience", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 16, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
@@ -498,6 +533,12 @@ class GUIWindow < FXMainWindow
   def createCharacterIcons()
     @characterIcons["cando"] = makeIcon("characterPictures/cando.png")
     @characterIcons["digard"] = makeIcon("characterPictures/digard.png")
+    # @characterIcons["successstuffed"] = nil
+    # @characterIcons["fortunemate"] = nil
+    # @characterIcons["chinpup"] = nil
+    # @characterIcons["nevergivecup"] = nil
+    # @characterIcons["motivistmas"] = nil
+    # @characterIcons["prize"] = nil
   end
 
   def on_close()

@@ -1,5 +1,5 @@
 ---
-- user_name: James
+- user_name: Jimmy
   user_character: cando
   user_characterHealth: 100
   user_experience: 0.0
@@ -227,4 +227,4 @@
         covered_strength: 1.2052631578947368
         covered_lines: 38
         total_lines: 38
-  last_logged: 2016-04-21 15:02:04.284238000 Z
+  last_logged: 2016-04-22 16:00:30.651230000 Z
