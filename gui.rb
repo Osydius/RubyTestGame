@@ -22,6 +22,7 @@ class GUIWindow < FXMainWindow
 
     @directoryHash = Hash.new
     @directoryTree
+    @currentLoadedFile = nil
 
     @users = Array.new
 
@@ -115,7 +116,7 @@ class GUIWindow < FXMainWindow
 
     save_cmd = FXMenuCommand.new(file_menu, "Save")
     save_cmd.connect(SEL_COMMAND) do
-      dialog = FXFileDialog.getSaveFilename(self, "Save a File", "")
+      dialog = FXFileDialog.getSaveFilename(self, "Save a File", @currentLoadedFile)
       save_file(dialog)
     end
 
@@ -193,24 +194,7 @@ class GUIWindow < FXMainWindow
       #Create a button that runs the current test
       @run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
       @run_menu_command.connect(SEL_COMMAND) do
-        testResult = system 'ruby testRunner.rb exampleTests/rspecTest.rspec'
-        if(testResult)
-          if(File.exist?("coverage"))
-            if(File.exist?("coverage/rspecResult.yml"))
-              # Getting rspec results
-              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
-
-              # Getting simplecov results
-              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
-
-              calculateTestScore(newRspecResults, newSimpleCovResults)
-            else
-              puts "couldn't find rspec result file"
-            end
-          else
-            puts "couldn't find rspec result directory"
-          end
-        end
+        runUserTest()
       end
     end
   end
@@ -278,24 +262,7 @@ class GUIWindow < FXMainWindow
       #Create a button that runs the current test
       @run_menu_command = FXMenuCommand.new(@main_menu_bar, "Run Tests")
       @run_menu_command.connect(SEL_COMMAND) do
-        testResult = system 'ruby testRunner.rb exampleTests/rubyTest.rspec'
-        if(testResult)
-          if(File.exist?("coverage"))
-            if(File.exist?("coverage/rspecResult.yml"))
-              # Getting rspec results
-              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
-
-              # Getting simplecov results
-              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
-
-              calculateTestScore(newRspecResults, newSimpleCovResults)
-            else
-              puts "couldn't find rspec result file"
-            end
-          else
-            puts "couldn't find rspec result directory"
-          end
-        end
+        runUserTest()
       end
     end
 
@@ -376,7 +343,40 @@ class GUIWindow < FXMainWindow
     new_user = Hash["user_name", @currentUser["user_name"], "user_character", @currentUser["user_character"], "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0.0, "user_abilityPoints", 0.0, "user_lastTestRun", new_user_test_data]
   end
 
+  def runUserTest()
+    if(@currentLoadedFile != nil)
+      testFile = nil
+      if(File.extname(@currentLoadedFile) == ".rb")
+        testFile = File.dirname(@currentLoadedFile) + "/" + File.basename(@currentLoadedFile, ".rb") + ".rspec"
+      elsif(File.extname(@currentLoadedFile) == ".rspec")
+        testFile = @currentLoadedFile
+      end
+
+      if(testFile != nil)
+        testResult = system 'ruby testRunner.rb ' + testFile
+        if(testResult)
+          if(File.exist?("coverage"))
+            if(File.exist?("coverage/rspecResult.yml"))
+              # Getting rspec results
+              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+
+              # Getting simplecov results
+              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+
+              calculateTestScore(newRspecResults, newSimpleCovResults)
+            else
+              puts "couldn't find rspec result file"
+            end
+          else
+            puts "couldn't find rspec result directory"
+          end
+        end
+      end
+    end
+  end
+
 	def load_file(filename)
+    @currentLoadedFile = filename
 	  contents = ""
 
 	  if(File.exist?(filename))

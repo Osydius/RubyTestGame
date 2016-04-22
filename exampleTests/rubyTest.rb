@@ -18,7 +18,7 @@ class RubyTest
     @testVariable = input
   end
 
-  def setTestAnotherVariable(input)
+ def setTestAnotherVariable(input)
     @testAnotherVariable = input
   end
 

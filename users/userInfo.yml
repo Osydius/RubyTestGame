@@ -1,5 +1,5 @@
 ---
-- user_name: Jimmy
+- user_name: James
   user_character: cando
   user_characterHealth: 100
   user_experience: 0.0
@@ -13,82 +13,103 @@
         :full_description: "#rubyTest Getting test variables returns the instance
           variable 'testVariable'"
         :status: passed
-        :file_path: "./exampleTests/rspecTest.rspec"
+        :file_path: "./exampleTests/rubyTest.rspec"
         :line_number: 5
-        :run_time: 0.0005
+        :run_time: 0.001
         :pending_message: 
       - :description: return the instance variable 'testAnotherVariable'
         :full_description: "#rubyTest Getting test variables return the instance variable
           'testAnotherVariable'"
         :status: passed
-        :file_path: "./exampleTests/rspecTest.rspec"
+        :file_path: "./exampleTests/rubyTest.rspec"
         :line_number: 11
         :run_time: 0.0
         :pending_message: 
       - :description: sets the instance variable 'setTestAnotherVariable
         :full_description: "#rubyTest Setting test variables sets the instance variable
           'setTestAnotherVariable"
-        :status: passed
-        :file_path: "./exampleTests/rspecTest.rspec"
+        :status: failed
+        :file_path: "./exampleTests/rubyTest.rspec"
         :line_number: 19
-        :run_time: 0.0005
+        :run_time: 0.0
         :pending_message: 
+        :exception:
+          :class: NoMethodError
+          :message: 'undefined method `setTestAnotherVariable'' for #<RubyTest:0x3307740>'
+          :backtrace:
+          - E:/GitRepositories/RubyTestGame/exampleTests/rubyTest.rspec:21:in `block
+            (3 levels) in <top (required)>'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `instance_exec'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `block in with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `block in with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:616:in
+            `run_around_example_hooks_for'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:233:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:581:in
+            `block in run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:543:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (3 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (2 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/configuration.rb:1680:in
+            `with_suite_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:118:in
+            `block in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/reporter.rb:77:in
+            `report'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:117:in
+            `run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:93:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:78:in
+            `run'
+          - testRunner.rb:35:in `<main>'
       - :description: sets the instance variable 'setTestVariable
         :full_description: "#rubyTest Setting test variables sets the instance variable
           'setTestVariable"
         :status: passed
-        :file_path: "./exampleTests/rspecTest.rspec"
+        :file_path: "./exampleTests/rubyTest.rspec"
         :line_number: 25
         :run_time: 0.0
         :pending_message: 
       :summary:
         :duration: 0.001
         :example_count: 4
-        :failure_count: 0
+        :failure_count: 1
         :pending_count: 0
-      :summary_line: 4 examples, 0 failures
+      :summary_line: 4 examples, 1 failure
     user_lastCoverageResult:
-      timestamp: 1461250929
+      timestamp: 1461342464
       command_name: RSpec
       files:
-      - filename: E:/GitRepositories/RubyTestGame/exampleTests/rspecTest.rspec
-        covered_percent: 100.0
-        coverage:
-        - 1
-        - 
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 
-        - 
-        - 1
-        - 1
-        - 1
-        - 1
-        - 
-        - 
-        - 
-        - 1
-        - 1
-        - 1
-        - 1
-        - 1
-        - 
-        - 
-        - 1
-        - 1
-        - 1
-        - 1
-        - 
-        - 
-        - 
-        - 
-        covered_strength: 1.0
-        covered_lines: 20
-        lines_of_code: 20
       - filename: E:/GitRepositories/RubyTestGame/exampleTests/rubyTest.rb
         covered_percent: 100.0
         coverage:
@@ -105,21 +126,59 @@
         - 
         - 
         - 1
-        - 2
-        - 
-        - 
-        - 1
         - 1
         - 
         - 
         - 1
         - 1
+        - 
+        - 
+        - 
+        - 
         - 
         - 
         - 
         covered_strength: 1.6
-        covered_lines: 13
-        lines_of_code: 13
+        covered_lines: 11
+        lines_of_code: 11
+      - filename: E:/GitRepositories/RubyTestGame/exampleTests/rubyTest.rspec
+        covered_percent: 95.0
+        coverage:
+        - 1
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 0
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 
+        - 
+        covered_strength: 1.0
+        covered_lines: 19
+        lines_of_code: 20
       - filename: E:/GitRepositories/RubyTestGame/spec/spec_helper.rb
         covered_percent: 100.0
         coverage:
@@ -223,8 +282,8 @@
         covered_lines: 5
         lines_of_code: 5
       metrics:
-        covered_percent: 100.0
-        covered_strength: 1.2052631578947368
-        covered_lines: 38
-        total_lines: 38
-  last_logged: 2016-04-22 16:00:30.651230000 Z
+        covered_percent: 97.22222222222223
+        covered_strength: 1.1833333333333333
+        covered_lines: 35
+        total_lines: 36
+  last_logged: 2016-04-22 16:05:40.344910000 Z
