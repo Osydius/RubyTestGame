@@ -1,0 +1,74 @@
+---
+- user_name: James
+  user_character: cando
+  user_characterHealth: 100
+  user_experience: 0.0
+  user_currency: 0.0
+  user_abilityPoints: 0.0
+  user_lastTestRun:
+    user_lastTestResult: {}
+    user_lastCoverageResult: {}
+  user_items:
+  - item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  - item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  - &1
+    item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  - *1
+  - item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  - item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  - item_name: basicBow
+    item_type: weapon
+    stats:
+      attack: 3
+      defense: 1
+    description: A basic bow that allows the avatar to take down attackers from a
+      distance
+    price: 100
+    requirements:
+      abilityPoints: 5
+  last_logged: 2016-04-23 16:36:55.280356000 Z

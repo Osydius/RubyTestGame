@@ -1,0 +1,10 @@
+---
+item_name: templateMisc
+item_type: nil
+stats:
+  attack: 0
+  defense: 0
+description: a miscellaneous item
+price: 0
+requirements:
+  abilityPoints: 0

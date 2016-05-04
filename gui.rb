@@ -5,17 +5,37 @@ require 'pathname'
 require 'yaml'
 include Fox
 
-require_relative 'editUserDialog'
-require_relative 'userStore'
+@classesPath = "library/classes"
+@iconsPath = "library/icons"
+@characterPicturePath = "library/characterPictures"
+@usersPath = "library/users"
+@itemsPath = "library/items"
+
+require_relative @classesPath + '/editUserDialog'
+require_relative @classesPath + '/userStore'
 
 class GUIWindow < FXMainWindow
 
-	def initialize(app, title, width, height)
+  @currentIconPath = ""
+  @currentUserPath = ""
+  @currentCharacterPicturePath = ""
+  @currentItemsPath = ""
+
+
+	def initialize(app, title, width, height, currentIconPath, currentUsersPath, currentCharacterPicturePath, currentItemsPath)
 		super(app, title, :opts => DECOR_ALL, :width => width, :height => height)
 
-		@icon_folder_open   = makeIcon("icons/minifolderopen.png")
-    @icon_folder_closed = makeIcon("icons/minifolder.png")
-    @icon_doc           = makeIcon("icons/minidoc.png")
+    @currentIconPath = currentIconPath
+    @currentUsersPath = currentUsersPath
+    @currentCharacterPicturePath = currentCharacterPicturePath
+    @currentItemsPath = currentItemsPath
+
+    @guiIcons = Hash.new
+		@guiIcons["icon_folder_open"]   = makeIcon(@currentIconPath + "/minifolderopen.png")
+    @guiIcons["icon_folder_closed"] = makeIcon(@currentIconPath + "/minifolder.png")
+    @guiIcons["icon_doc"]           = makeIcon(@currentIconPath + "/minidoc.png")
+    @guiIcons["currency"]           = makeIcon(@currentIconPath + "/currency.png")
+    @guiIcons["abilityPoints"]      = makeIcon(@currentIconPath + "/abilityPoints.png")
 
     @characterIcons = Hash.new
     createCharacterIcons()
@@ -32,9 +52,9 @@ class GUIWindow < FXMainWindow
     #------------------------------#
     # ADD USERS FROM SAVE FILE #
     new_users = Array.new
-    if(File.exist?("users"))
-      if(File.exist?("users/userInfo.yml"))
-        new_users = YAML.load(File.read('users/userInfo.yml'))
+    if(File.exist?(@currentUsersPath))
+      if(File.exist?(@currentUsersPath + "/userInfo.yml"))
+        new_users = YAML.load(File.read(@currentUsersPath + "/userInfo.yml"))
         if new_users != false
           new_users.each do |new_user|
             @users.push(new_user)
@@ -97,7 +117,7 @@ class GUIWindow < FXMainWindow
     load_cmd.connect(SEL_COMMAND) do
       dialog = FXFileDialog.new(self, "Load a File")
       dialog.selectMode = SELECTFILE_EXISTING
-      dialog.patternList = ["All Files (*)"]
+      dialog.patternList = ["*.rb, *.rspec"]
       if dialog.execute != 0
         load_file(dialog.filename)
       end
@@ -144,12 +164,9 @@ class GUIWindow < FXMainWindow
         end
 
         if is_new_user
-          new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
-          new_user = Hash["user_name", result, "user_character", "cando", "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0.0, "user_abilityPoints", 0.0, "user_lastTestRun", new_user_test_data]
-          new_user["last_logged"] = Time.now.utc
-          @users.push(new_user)
-
-          update_current_user(new_user["user_name"])
+          newUser = createNewUserHash(result, nil)
+          @users.push(newUser)
+          update_current_user(newUser["user_name"])
         end
       end
     end
@@ -228,7 +245,7 @@ class GUIWindow < FXMainWindow
 
     @gameArea.childAtIndex(0).text = @currentUser["user_name"]
 
-    logo = FXPNGImage.new(getApp(), File.open("characterPictures/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+    logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
     logo.scale(174, 174)
     @image.image = logo
 
@@ -241,18 +258,16 @@ class GUIWindow < FXMainWindow
       #create edit dialog
       editUser = EditUserDialog.new(self, @currentUser, @characterIcons)
       if editUser.execute != 0
-        if editUser.execute != 0
-          if(editUser.deleteUser)
-            puts "want to delete user"
+        if(editUser.deleteUser)
+          puts "want to delete user"
+        else
+          if(editUser.newUserCharacter != @currentUser["user_character"])
+            @currentUser["user_name"] = editUser.newUserName
+            @currentUser["user_character"] = editUser.newUserCharacter
+            resetUserProgress()
           else
-            if(editUser.newUserCharacter != @currentUser["user_character"])
-              @currentUser["user_name"] = editUser.newUserName
-              @currentUser["user_character"] = editUser.newUserCharacter
-              resetUserProgress()
-            else
-              @currentUser["user_name"] = editUser.newUserName
-              update_current_user(@currentUser["user_name"])
-            end
+            @currentUser["user_name"] = editUser.newUserName
+            update_current_user(@currentUser["user_name"])
           end
         end
       end
@@ -339,8 +354,7 @@ class GUIWindow < FXMainWindow
   end
 
   def resetUserProgress()
-    new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
-    new_user = Hash["user_name", @currentUser["user_name"], "user_character", @currentUser["user_character"], "user_characterHealth", 100, "user_experience", 0.0, "user_currency", 0.0, "user_abilityPoints", 0.0, "user_lastTestRun", new_user_test_data]
+    @currentUser = createNewUserHash(@currentUser["user_name"], @currentUser["user_character"])
   end
 
   def runUserTest()
@@ -353,7 +367,7 @@ class GUIWindow < FXMainWindow
       end
 
       if(testFile != nil)
-        testResult = system 'ruby testRunner.rb ' + testFile
+        testResult = system 'ruby library/testRunner.rb ' + testFile
         if(testResult)
           if(File.exist?("coverage"))
             if(File.exist?("coverage/rspecResult.yml"))
@@ -373,6 +387,25 @@ class GUIWindow < FXMainWindow
         end
       end
     end
+  end
+
+  def createNewUserHash(new_user_name, new_user_character)
+    if(new_user_character == nil)
+      new_user_character = "cando"
+    end
+    new_user_items = Array.new
+    new_user_test_data = Hash["user_lastTestResult", {}, "user_lastCoverageResult", {}]
+    new_user = Hash["user_name", new_user_name]
+    new_user["user_character"] = new_user_character
+    new_user["user_characterHealth"] = 100
+    new_user["user_experience"] = 0.0
+    new_user["user_currency"] = 0.0
+    new_user["user_abilityPoints"] = 0.0
+    new_user["user_lastTestRun"] = new_user_test_data
+    new_user["user_items"] = new_user_items
+    new_user["last_logged"] = Time.now.utc
+
+    return new_user
   end
 
 	def load_file(filename)
@@ -459,11 +492,15 @@ class GUIWindow < FXMainWindow
   def add_game_area(group)
     #User Profile
     FXLabel.new(group, @currentUser["user_name"], nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
-    logo = FXPNGImage.new(getApp(), File.open("characterPictures/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
-    @image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
-    logo.scale(174, 174)
-    @image.image = logo
 
+    if(@currentUser["user_character"] != nil)
+      logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+      logo.scale(174, 174)
+      @image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
+      @image.image = logo
+    else
+      @image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
+    end
 
     #Experience
     FXLabel.new(group, "Experience", nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 16, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
@@ -487,7 +524,13 @@ class GUIWindow < FXMainWindow
     FXButton.new(group, "Avatar Customisation", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
 
     #Avatar Shop
-    FXButton.new(group, "Avatar Store", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+    shopButton = FXButton.new(group, "Avatar Store", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+    shopButton.connect(SEL_COMMAND) do |sender, selector, ptr|
+      store = AvatarStore.new(self, @currentUser, @characterIcons, @currentCharacterPicturePath, @guiIcons, @currentItemsPath)
+      if store.execute != 0
+        puts "store closed"
+      end
+    end
   end
 
   def newDirectory(currentDirectory, currentLevel)
@@ -495,7 +538,7 @@ class GUIWindow < FXMainWindow
 
   	@directoryHash[fileName] = currentDirectory.expand_path
   	@directoryTree = Tree::TreeNode.new(currentDirectory.expand_path, fileName)
-  	newLevel = @dirTree.appendItem(currentLevel, fileName, @icon_folder_open, @icon_folder_closed)
+  	newLevel = @dirTree.appendItem(currentLevel, fileName, @guiIcons["icon_folder_open"], @guiIcons["icon_folder_closed"])
 
   	currentDirectory.each_child{|childDirectory|
   		childFileName = childDirectory.basename.to_s
@@ -506,7 +549,7 @@ class GUIWindow < FXMainWindow
   		if(childDirectory.directory?())
   			newDirectory(childDirectory, newLevel)
   		else
-  			@dirTree.appendItem(newLevel, childFileName, @icon_doc, @icon_doc)
+  			@dirTree.appendItem(newLevel, childFileName, @guiIcons["icon_doc"], @guiIcons["icon_doc"])
   		end
 
   	}
@@ -531,8 +574,8 @@ class GUIWindow < FXMainWindow
   end
 
   def createCharacterIcons()
-    @characterIcons["cando"] = makeIcon("characterPictures/cando.png")
-    @characterIcons["digard"] = makeIcon("characterPictures/digard.png")
+    @characterIcons["cando"] = makeIcon(@currentCharacterPicturePath + "/cando.png")
+    @characterIcons["digard"] = makeIcon(@currentCharacterPicturePath + "/digard.png")
     # @characterIcons["successstuffed"] = nil
     # @characterIcons["fortunemate"] = nil
     # @characterIcons["chinpup"] = nil
@@ -543,7 +586,7 @@ class GUIWindow < FXMainWindow
 
   def on_close()
     if @users.length != 0
-      users_directory = "users"
+      users_directory = @currentUsersPath
       Dir.mkdir(users_directory) unless File.exists?(users_directory)
       File.open(users_directory + '/userInfo.yml', 'w+') {|f| f.write(YAML.dump(@users)) }
     end
@@ -554,7 +597,8 @@ end
 #Run code if not being used as a requirement
 if __FILE__ == $0
 	app = FXApp.new
-	GUIWindow.new(app, "GUI", 800, 600)
+  #GUIWindow.new(app, window text, width, height, iconPath, userPath, characterPicturePath, itemsPath)
+	GUIWindow.new(app, "GUI", 1500, 750, @iconsPath, @usersPath, @characterPicturePath, @itemsPath)
 	app.create
 	app.run
 end

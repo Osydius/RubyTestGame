@@ -1,0 +1,10 @@
+---
+item_name: basicArmour
+item_type: armour
+stats:
+  attack: 0
+  defense: 10
+description: "A basic set of armour that will help deflect attacks against your avatar"
+price: 100
+requirements:
+  abilityPoints: 0

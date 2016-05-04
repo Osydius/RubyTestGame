@@ -1,0 +1,10 @@
+---
+item_name: basicSword
+item_type: weapon
+stats:
+  attack: 5
+  defense: 0
+description: "A basic sword that makes attackers think twice before swinging at your avatar"
+price: 100
+requirements:
+  abilityPoints: 0

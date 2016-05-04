@@ -1,0 +1,10 @@
+---
+item_name: templateArmour
+item_type: armour
+stats:
+  attack: 0
+  defense: 1
+description: an armour
+price: 0
+requirements:
+  abilityPoints: 0

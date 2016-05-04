@@ -1,0 +1,10 @@
+---
+item_name: basicBow
+item_type: weapon
+stats:
+  attack: 3
+  defense: 1
+description: "A basic bow that allows the avatar to take down attackers from a distance"
+price: 100
+requirements:
+  abilityPoints: 5

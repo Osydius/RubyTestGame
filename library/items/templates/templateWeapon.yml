@@ -1,0 +1,10 @@
+---
+item_name: templateWeapon
+item_type: weapon
+stats:
+  attack: 1
+  defense: 0
+description: a weapon
+price: 0
+requirements:
+  abilityPoints: 0

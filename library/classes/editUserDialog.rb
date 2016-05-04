@@ -7,14 +7,14 @@ class EditUserDialog < FXDialogBox
   attr_accessor :newUserCharacter
 
 	def initialize(owner, currentUser, characterIcons)
-		editUserWindow = super(owner, "Edit User", DECOR_TITLE|DECOR_BORDER, :width => 750, :height => 750)
+		editUserWindow = super(owner, "Edit User", DECOR_ALL|DECOR_BORDER, :width => 750, :height => 750)
 
 		userNameField = FXTextField.new(self, 50)
 		userNameField.text = currentUser["user_name"]
 
 
     characterSelectionScrollArea = FXScrollWindow.new(self, :opts => SCROLLERS_TRACK|HSCROLLER_ALWAYS|VSCROLLER_NEVER|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT, :height => 100)
-    characterSelectionArea = FXHorizontalFrame.new(characterSelectionScrollArea, :opts => LAYOUT_FILL_X)
+    characterSelectionArea = FXHorizontalFrame.new(characterSelectionScrollArea, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
     characterIcons.each do |characterName, characterIcon|
       if(characterIcon != nil)
