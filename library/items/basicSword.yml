@@ -1,6 +1,7 @@
 ---
-item_name: basicSword
+item_name: Basic Sword
 item_type: weapon
+item_icon: basicSword.png
 stats:
   attack: 5
   defense: 0

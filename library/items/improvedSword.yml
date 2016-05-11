@@ -1,0 +1,11 @@
+---
+item_name: Improved Sword
+item_type: weapon
+item_icon: improvedSword.png
+stats:
+  attack: 10
+  defense: 0
+description: "An improved sword with a tempered edge"
+price: 250
+requirements:
+  abilityPoints: 1

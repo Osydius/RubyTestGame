@@ -1,0 +1,6 @@
+---
+badge_name: "Pass 25 Tests"
+badge_grade: silver
+badge_icon: silverBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Have at least 25 tests pass"
+badge_description_short: "Pass 25 tests"

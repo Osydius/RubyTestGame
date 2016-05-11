@@ -1,0 +1,6 @@
+---
+badge_name: "First Login"
+badge_grade: bronze
+badge_icon: bronzeBadge.png
+badge_description: "Login for the first time by selecting a user. If none exist then create one!"
+badge_description_short: "Login for the first time."

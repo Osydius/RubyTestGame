@@ -1,0 +1,11 @@
+---
+item_name: Basic Camouflage
+item_type:
+item_icon: basicCamo.png
+stats:
+  attack: 0
+  defense: 5
+description: A series of patterns that help an avatar hide in plain sight
+price: 200
+requirements:
+  abilityPoints: 1

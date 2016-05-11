@@ -1,74 +1,556 @@
 ---
 - user_name: James
   user_character: cando
-  user_characterHealth: 100
-  user_experience: 0.0
-  user_currency: 0.0
-  user_abilityPoints: 0.0
+  user_characterHealth: 25
+  user_experience: 0.35
+  user_currency: 70.0
+  user_abilityPoints: 0.7
   user_lastTestRun:
-    user_lastTestResult: {}
-    user_lastCoverageResult: {}
-  user_items:
-  - item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  - item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  - &1
-    item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  - *1
-  - item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  - item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  - item_name: basicBow
-    item_type: weapon
-    stats:
-      attack: 3
-      defense: 1
-    description: A basic bow that allows the avatar to take down attackers from a
-      distance
-    price: 100
-    requirements:
-      abilityPoints: 5
-  last_logged: 2016-04-23 16:36:55.280356000 Z
+    user_lastTestResult:
+      :version: 3.4.4
+      :examples:
+      - :description: getting test variable
+        :full_description: TestFile2#allTests testing test variables getting test
+          variable
+        :status: passed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 5
+        :run_time: 0.000499
+        :pending_message: 
+      - :description: getting test variable 2
+        :full_description: TestFile2#allTests testing test variables getting test
+          variable 2
+        :status: passed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 10
+        :run_time: 0.0
+        :pending_message: 
+      - :description: add both variables
+        :full_description: TestFile2#allTests testing test maths add both variables
+        :status: passed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 17
+        :run_time: 0.0
+        :pending_message: 
+      - :description: subtracts both variables
+        :full_description: TestFile2#allTests testing test maths subtracts both variables
+        :status: failed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 22
+        :run_time: 0.0
+        :pending_message: 
+        :exception:
+          :class: NoMethodError
+          :message: 'undefined method `subtractBothVariables'' for #<TestFile2:0x3342690
+            @testVariable=2, @testVariable2=6>'
+          :backtrace:
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rspec:24:in
+            `block (3 levels) in <top (required)>'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `instance_exec'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `block in with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `block in with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:616:in
+            `run_around_example_hooks_for'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:233:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:581:in
+            `block in run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:543:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (3 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (2 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/configuration.rb:1680:in
+            `with_suite_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:118:in
+            `block in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/reporter.rb:77:in
+            `report'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:117:in
+            `run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:93:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:78:in
+            `run'
+          - library/classes/testRunner.rb:35:in `<main>'
+      - :description: multiply both variables
+        :full_description: TestFile2#allTests testing test maths multiply both variables
+        :status: passed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 27
+        :run_time: 0.0
+        :pending_message: 
+      - :description: divides both variables
+        :full_description: TestFile2#allTests testing test maths divides both variables
+        :status: failed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 32
+        :run_time: 0.0
+        :pending_message: 
+        :exception:
+          :class: NoMethodError
+          :message: 'undefined method `divideBothVariables'' for #<TestFile2:0x333bce8
+            @testVariable=2, @testVariable2=6>'
+          :backtrace:
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rspec:34:in
+            `block (3 levels) in <top (required)>'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `instance_exec'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `block in with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `block in with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:616:in
+            `run_around_example_hooks_for'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:233:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:581:in
+            `block in run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:543:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (3 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (2 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/configuration.rb:1680:in
+            `with_suite_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:118:in
+            `block in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/reporter.rb:77:in
+            `report'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:117:in
+            `run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:93:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:78:in
+            `run'
+          - library/classes/testRunner.rb:35:in `<main>'
+      - :description: creates an array of length 5
+        :full_description: TestFile2#allTests array creation creates an array of length
+          5
+        :status: failed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 39
+        :run_time: 0.0
+        :pending_message: 
+        :exception:
+          :class: TypeError
+          :message: no implicit conversion from nil to integer
+          :backtrace:
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:37:in
+            `[]='
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:37:in
+            `block in getArrayOfTestVariable'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:36:in
+            `each'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:36:in
+            `getArrayOfTestVariable'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rspec:41:in
+            `block (3 levels) in <top (required)>'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `instance_exec'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `block in with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `block in with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:616:in
+            `run_around_example_hooks_for'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:233:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:581:in
+            `block in run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:543:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (3 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (2 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/configuration.rb:1680:in
+            `with_suite_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:118:in
+            `block in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/reporter.rb:77:in
+            `report'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:117:in
+            `run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:93:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:78:in
+            `run'
+          - library/classes/testRunner.rb:35:in `<main>'
+      - :description: creates an array filled with testVariable
+        :full_description: TestFile2#allTests array creation creates an array filled
+          with testVariable
+        :status: failed
+        :file_path: "./testFolder/folder1/folder1.2/testFile1-2.rspec"
+        :line_number: 45
+        :run_time: 0.0
+        :pending_message: 
+        :exception:
+          :class: TypeError
+          :message: no implicit conversion from nil to integer
+          :backtrace:
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:37:in
+            `[]='
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:37:in
+            `block in getArrayOfTestVariable'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:36:in
+            `each'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb:36:in
+            `getArrayOfTestVariable'
+          - E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rspec:47:in
+            `block (3 levels) in <top (required)>'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `instance_exec'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:236:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `block in with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `block in with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:616:in
+            `run_around_example_hooks_for'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/hooks.rb:478:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:435:in
+            `with_around_example_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:478:in
+            `with_around_and_singleton_context_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example.rb:233:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:581:in
+            `block in run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:577:in
+            `run_examples'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:543:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `block in run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/example_group.rb:544:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (3 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `map'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:119:in
+            `block (2 levels) in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/configuration.rb:1680:in
+            `with_suite_hooks'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:118:in
+            `block in run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/reporter.rb:77:in
+            `report'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:117:in
+            `run_specs'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:93:in
+            `run'
+          - E:/Ruby/Ruby22/lib/ruby/gems/2.2.0/gems/rspec-core-3.4.4/lib/rspec/core/runner.rb:78:in
+            `run'
+          - library/classes/testRunner.rb:35:in `<main>'
+      :summary:
+        :duration: 0.001499
+        :example_count: 8
+        :failure_count: 4
+        :pending_count: 0
+      :summary_line: 8 examples, 4 failures
+    user_lastCoverageResult:
+      timestamp: 1462923794
+      command_name: RSpec
+      files:
+      - filename: E:/GitRepositories/RubyTestGame/spec/spec_helper.rb
+        covered_percent: 100.0
+        coverage:
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 1
+        - 
+        - 
+        - 
+        - 1
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 1
+        - 
+        - 
+        - 
+        - 
+        - 1
+        - 
+        - 
+        - 
+        - 1
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        - 
+        covered_strength: 1.0
+        covered_lines: 5
+        lines_of_code: 5
+      - filename: E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rb
+        covered_percent: 86.95652173913044
+        coverage:
+        - 1
+        - 1
+        - 1
+        - 
+        - 1
+        - 8
+        - 8
+        - 
+        - 
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 0
+        - 
+        - 
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 0
+        - 
+        - 
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 2
+        - 2
+        - 2
+        - 
+        - 0
+        - 
+        - 
+        - 
+        - 
+        covered_strength: 1.6
+        covered_lines: 20
+        lines_of_code: 23
+      - filename: E:/GitRepositories/RubyTestGame/testFolder/folder1/folder1.2/testFile1-2.rspec
+        covered_percent: 82.85714285714286
+        coverage:
+        - 1
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 1
+        - 0
+        - 
+        - 
+        - 1
+        - 1
+        - 1
+        - 0
+        - 0
+        - 0
+        - 0
+        - 
+        - 
+        - 0
+        - 
+        - 
+        - 
+        covered_strength: 0.8
+        covered_lines: 29
+        lines_of_code: 35
+      metrics:
+        covered_percent: 85.71428571428571
+        covered_strength: 1.1079365079365082
+        covered_lines: 54
+        total_lines: 63
+  user_items: []
+  last_logged: 2016-05-10 23:43:14.684562000 Z

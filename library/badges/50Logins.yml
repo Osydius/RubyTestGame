@@ -1,0 +1,6 @@
+---
+badge_name: "50 Logins"
+badge_grade: bronze
+badge_icon: silverBadge.png
+badge_description: "Once a user has been created, log in 50 times"
+badge_description_short: "Login 50 times."

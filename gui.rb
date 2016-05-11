@@ -10,9 +10,11 @@ include Fox
 @characterPicturePath = "library/characterPictures"
 @usersPath = "library/users"
 @itemsPath = "library/items"
+@badgesPath = "library/badges"
 
 require_relative @classesPath + '/editUserDialog'
 require_relative @classesPath + '/userStore'
+require_relative @classesPath + '/userBadges'
 
 class GUIWindow < FXMainWindow
 
@@ -20,15 +22,17 @@ class GUIWindow < FXMainWindow
   @currentUserPath = ""
   @currentCharacterPicturePath = ""
   @currentItemsPath = ""
+  @currentBadgesPath = ""
 
 
-	def initialize(app, title, width, height, currentIconPath, currentUsersPath, currentCharacterPicturePath, currentItemsPath)
+	def initialize(app, title, width, height, currentIconPath, currentUsersPath, currentCharacterPicturePath, currentItemsPath, currentBadgesPath)
 		super(app, title, :opts => DECOR_ALL, :width => width, :height => height)
 
     @currentIconPath = currentIconPath
     @currentUsersPath = currentUsersPath
     @currentCharacterPicturePath = currentCharacterPicturePath
     @currentItemsPath = currentItemsPath
+    @currentBadgesPath = currentBadgesPath
 
     @guiIcons = Hash.new
 		@guiIcons["icon_folder_open"]   = makeIcon(@currentIconPath + "/minifolderopen.png")
@@ -94,6 +98,19 @@ class GUIWindow < FXMainWindow
 		show(PLACEMENT_SCREEN)
 	end
 
+  def makeIcon(filename)
+    begin
+      icon = nil
+      File.open(filename, "rb") do |f|
+        icon = FXPNGIcon.new(getApp(), f.read)
+      end
+      icon.create()
+      icon
+    rescue
+      raise RuntimeError, "Couldn't load icon: #{filename}"
+    end
+  end
+
 	private
 	def add_menu_bar
 
@@ -117,7 +134,7 @@ class GUIWindow < FXMainWindow
     load_cmd.connect(SEL_COMMAND) do
       dialog = FXFileDialog.new(self, "Load a File")
       dialog.selectMode = SELECTFILE_EXISTING
-      dialog.patternList = ["*.rb, *.rspec"]
+      dialog.patternList = ["*"]
       if dialog.execute != 0
         load_file(dialog.filename)
       end
@@ -245,7 +262,7 @@ class GUIWindow < FXMainWindow
 
     @gameArea.childAtIndex(0).text = @currentUser["user_name"]
 
-    logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/"+ @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+    logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/"+ @currentUser["user_character"].capitalize + ".png", "rb").read, :opts => IMAGE_KEEP)
     logo.scale(174, 174)
     @image.image = logo
 
@@ -301,13 +318,7 @@ class GUIWindow < FXMainWindow
       # Calculate difference in total tests ran
       totalTestsRan = rspecResults[:summary][:example_count]
       ranTestDifference = totalTestsRan - oldRspecResults[:summary][:example_count]
-      if(ranTestDifference > 0)
-        currentScore += 10
-      elsif(ranTestDifference == 0)
-        currentScore = currentScore
-      else
-        currentScore -= 10
-      end
+      currentScore = 1 * ranTestDifference
 
       @currentUser["user_lastTestRun"]["user_lastTestResult"] = rspecResults
       @currentUser["user_lastTestRun"]["user_lastCoverageResult"] = simpleCovResults
@@ -319,6 +330,8 @@ class GUIWindow < FXMainWindow
     if(currentScore != 0)
       updateUserScores(currentScore)
     end
+
+    update_coverage_display(simpleCovResults)
   end
 
   def updateUserScores(score)
@@ -353,40 +366,105 @@ class GUIWindow < FXMainWindow
     return currentAbilityPoints
   end
 
+  def update_coverage_display(coverageResults)
+    coverageFiles = coverageResults["files"]
+    linesCovered = nil
+    coverageSummary = 0
+    convertedCurrentFile = @currentLoadedFile.gsub('\\','/')
+    coverageFiles.each do |coverageFile|
+      if(coverageFile["filename"] == convertedCurrentFile)
+        linesCovered = coverageFile["coverage"]
+        coverageSummary = coverageFile["covered_percent"]
+      end
+    end
+
+    if(coverageSummary == 100)
+      @mainTxt.backColor = FXColor::Green
+    else
+      @mainTxt.backColor = FXColor::Red
+    end
+
+    @mainTxt.recalc
+  end
+
   def resetUserProgress()
     @currentUser = createNewUserHash(@currentUser["user_name"], @currentUser["user_character"])
   end
 
   def runUserTest()
-    if(@currentLoadedFile != nil)
-      testFile = nil
-      if(File.extname(@currentLoadedFile) == ".rb")
-        testFile = File.dirname(@currentLoadedFile) + "/" + File.basename(@currentLoadedFile, ".rb") + ".rspec"
-      elsif(File.extname(@currentLoadedFile) == ".rspec")
-        testFile = @currentLoadedFile
-      end
+    if(canRunTests)
+      if(@currentLoadedFile != nil)
+        testFile = nil
+        if(File.extname(@currentLoadedFile) == ".rb")
+          testFile = File.dirname(@currentLoadedFile) + "\\" + File.basename(@currentLoadedFile, ".rb") + ".rspec"
+        elsif(File.extname(@currentLoadedFile) == ".rspec")
+          testFile = @currentLoadedFile
+        end
 
-      if(testFile != nil)
-        testResult = system 'ruby library/testRunner.rb ' + testFile
-        if(testResult)
-          if(File.exist?("coverage"))
-            if(File.exist?("coverage/rspecResult.yml"))
-              # Getting rspec results
-              newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
+        if(testFile != nil)
+          testResult = system 'ruby library/classes/testRunner.rb ' + testFile
+          if(testResult)
+            if(File.exist?("coverage"))
+              if(File.exist?("coverage/rspecResult.yml"))
+                # Getting rspec results
+                newRspecResults = YAML.load(File.read('coverage/rspecResult.yml'))
 
-              # Getting simplecov results
-              newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
-
-              calculateTestScore(newRspecResults, newSimpleCovResults)
+                # Getting simplecov results
+                newSimpleCovResults = JSON.parse(File.read('coverage/coverage.json'))
+                calculateTestScore(newRspecResults, newSimpleCovResults)
+              else
+                puts "couldn't find rspec result file"
+              end
             else
-              puts "couldn't find rspec result file"
+              puts "couldn't find rspec result directory"
             end
-          else
-            puts "couldn't find rspec result directory"
           end
         end
       end
     end
+  end
+
+  def canRunTests()
+    runTests = true
+    if(@currentLoadedFile != nil)
+      if(@currentUser["user_characterHealth"] == 0)
+        revivePrice = @currentUser["user_currency"]/6
+        messageDescription = "It appears that " + @currentUser["user_character"] + " needs to be revived before any more tests can be run."
+        messagePrice = "It will cost " + revivePrice.to_s + " currency to revive " + @currentUser["user_character"] + "."
+        reviveOption = FXMessageBox.new(self, "Confirm Revive", messageDescription + "\n" + messagePrice , :opts => MBOX_OK_CANCEL)
+        if(reviveOption.execute == MBOX_CLICKED_OK)
+          if((@currentUser["user_currency"] - revivePrice) < 0)
+            FXMessageBox.new(self, "Not enough currency", "You currently do not have enough funds to revive " + @currentUser["user_character"], :opts => MBOX_OK).execute
+            runTests = false;
+          else
+            @currentUser["user_currency"] -= revivePrice
+            @currentUser["user_characterHealth"] = 25
+            updateCharacterImage()
+          end
+        else
+          runTests = false
+        end
+      end
+    else
+      FXMessageBox.new(self, "Load File", "You must have a file loaded before any tests can be ran.", :opts => MBOX_OK).execute
+      runTests = false
+    end
+
+    return runTests
+  end
+
+  def updateCharacterImage()
+    if(@currentUser["user_characterHealth"] == 0)
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + "Dead.png", "rb").read, :opts => IMAGE_KEEP)
+      elsif(@currentUser["user_characterHealth"] < 50)
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + "Sad.png", "rb").read, :opts => IMAGE_KEEP)
+      else
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+      end
+      logo.scale(174, 174)
+      @image.image = logo
+      @gameArea.create
+      @gameArea.recalc
   end
 
   def createNewUserHash(new_user_name, new_user_character)
@@ -409,6 +487,7 @@ class GUIWindow < FXMainWindow
   end
 
 	def load_file(filename)
+    puts filename
     @currentLoadedFile = filename
 	  contents = ""
 
@@ -445,19 +524,6 @@ class GUIWindow < FXMainWindow
 		load_file(filename)
 	end
 
-	def makeIcon(filename)
-    begin
-      icon = nil
-      File.open(filename, "rb") do |f|
-        icon = FXPNGIcon.new(getApp(), f.read)
-      end
-      icon.create()
-      icon
-    rescue
-      raise RuntimeError, "Couldn't load icon: #{filename}"
-    end
-  end
-
   def add_status_bar
   	status = FXStatusBar.new(self, LAYOUT_SIDE_BOTTOM | LAYOUT_FILL_X | STATUSBAR_WITH_DRAGCORNER)
   end
@@ -482,10 +548,12 @@ class GUIWindow < FXMainWindow
 
   def add_text_area(group)
     #textScrollArea = FXScrollArea.new(group, :opts => (LAYOUT_FILL_X|LAYOUT_FILL_Y|VSCROLLER_ALWAYS))
-    @numberTxt = FXText.new(group, :opts => TEXT_READONLY|LAYOUT_FILL_Y|VSCROLLER_NEVER)
+    #@numberTxt = FXText.new(group, :opts => TEXT_READONLY|LAYOUT_FILL_Y|VSCROLLER_NEVER)
 
-  	@mainTxt = FXText.new(group, :opts => TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL|LAYOUT_FILL|VSCROLLER_NEVER)
-		@mainTxt.text = ""
+  	@mainTxt = FXText.new(group, :opts => TEXT_WORDWRAP|TEXT_SHOWACTIVE|TEXT_AUTOSCROLL|LAYOUT_FILL|VSCROLLER_ALWAYS|VSCROLLING_ON)
+    @mainTxt.barColumns = 3
+    @mainTxt.activeBackColor = FXColor::LightGrey
+    @mainTxt.marginLeft = 10
     @mainTxt.connect(SEL_CHANGED, method(:updateLineNumbers))
   end
 
@@ -494,7 +562,13 @@ class GUIWindow < FXMainWindow
     FXLabel.new(group, @currentUser["user_name"], nil, :opts => JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 24, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
 
     if(@currentUser["user_character"] != nil)
-      logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+      if(@currentUser["user_characterHealth"] == 0)
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + "Dead.png", "rb").read, :opts => IMAGE_KEEP)
+      elsif(@currentUser["user_characterHealth"] < 50)
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + "Sad.png", "rb").read, :opts => IMAGE_KEEP)
+      else
+        logo = FXPNGImage.new(getApp(), File.open(@currentCharacterPicturePath + "/" + @currentUser["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+      end
       logo.scale(174, 174)
       @image = FXImageFrame.new(group, @logo, LAYOUT_SIDE_TOP|LAYOUT_FILL_X)
       @image.image = logo
@@ -517,11 +591,17 @@ class GUIWindow < FXMainWindow
     FXLabel.new(horframe, "Ability Points", nil, JUSTIFY_LEFT|LAYOUT_FILL_ROW).setFont(FXFont.new(getApp(), "helvetica", 12, FONTWEIGHT_BOLD,FONTSLANT_ITALIC, FONTENCODING_DEFAULT))
     FXTextField.new(horframe, 0, @userAbilityPointsDataTarget, FXDataTarget::ID_VALUE, :opts => TEXTFIELD_READONLY|LAYOUT_FILL_X)
 
-    #Last Badge Earned
-    FXButton.new(group, "Last Badge Earned", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+    #Badges
+    userBadgesButton = FXButton.new(group, "Badges", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+    userBadgesButton.connect(SEL_COMMAND) do |sender, selector, ptr|
+      badgesWindow = BadgeDisplay.new(self, @currentUser, @characterIcons, @currentCharacterPicturePath, @guiIcons, @currentBadgesPath)
+      if badgesWindow.execute != 0
+        puts "badge display closed"
+      end
+    end
 
     #Avatar Customisation
-    FXButton.new(group, "Avatar Customisation", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
+    #FXButton.new(group, "Avatar Customisation", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
 
     #Avatar Shop
     shopButton = FXButton.new(group, "Avatar Store", nil, getApp(), :opts =>FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT, :padLeft => 10, :padRight => 10, :padTop => 5, :padBottom => 5)
@@ -556,26 +636,26 @@ class GUIWindow < FXMainWindow
   end
 
   def treeSelection(sender, selector, data)
-  	load_file(data.to_s)
+  	load_file(@directoryHash[data.to_s].to_s)
 	end
 
   def updateLineNumbers(sender, selector, data)
-    addLineNumbers()
+    #addLineNumbers()
   end
 
   def addLineNumbers()
     if(@totalLines != @mainTxt.text.lines.count)
       @totalLines = @mainTxt.text.lines.count
-      @numberTxt.text = ""
+      #@numberTxt.text = ""
       @totalLines.times do |i|
-        @numberTxt.text = @numberTxt.text + i.to_s + "\n"
+        #@numberTxt.text = @numberTxt.text + i.to_s + "\n"
       end
     end
   end
 
   def createCharacterIcons()
-    @characterIcons["cando"] = makeIcon(@currentCharacterPicturePath + "/cando.png")
-    @characterIcons["digard"] = makeIcon(@currentCharacterPicturePath + "/digard.png")
+    @characterIcons["cando"] = makeIcon(@currentCharacterPicturePath + "/Cando.png")
+    @characterIcons["digard"] = makeIcon(@currentCharacterPicturePath + "/Digard.png")
     # @characterIcons["successstuffed"] = nil
     # @characterIcons["fortunemate"] = nil
     # @characterIcons["chinpup"] = nil
@@ -587,7 +667,7 @@ class GUIWindow < FXMainWindow
   def on_close()
     if @users.length != 0
       users_directory = @currentUsersPath
-      Dir.mkdir(users_directory) unless File.exists?(users_directory)
+      #Dir.mkdir(users_directory) unless File.exists?(users_directory)
       File.open(users_directory + '/userInfo.yml', 'w+') {|f| f.write(YAML.dump(@users)) }
     end
     getApp().exit(0)
@@ -597,8 +677,8 @@ end
 #Run code if not being used as a requirement
 if __FILE__ == $0
 	app = FXApp.new
-  #GUIWindow.new(app, window text, width, height, iconPath, userPath, characterPicturePath, itemsPath)
-	GUIWindow.new(app, "GUI", 1500, 750, @iconsPath, @usersPath, @characterPicturePath, @itemsPath)
+  #GUIWindow.new(app, window text, width, height, iconPath, userPath, characterPicturePath, itemsPath, badgesPath)
+	GUIWindow.new(app, "GUI", 1500, 750, @iconsPath, @usersPath, @characterPicturePath, @itemsPath, @badgesPath)
 	app.create
 	app.run
 end

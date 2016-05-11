@@ -1,0 +1,11 @@
+---
+item_name: Basic Dagger
+item_type: weapon
+item_icon: basicDagger.png
+stats:
+  attack: 3
+  defense: 0
+description: A small weapon used against agressors
+price: 50
+requirements:
+  abilityPoints: 0

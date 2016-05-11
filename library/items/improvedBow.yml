@@ -1,0 +1,11 @@
+---
+item_name: Improved Bow
+item_type: weapon
+item_icon: improvedBow.png
+stats:
+  attack: 6
+  defense: 2
+description: "An improved bow with a greater draw string and accurate arrows"
+price: 300
+requirements:
+  abilityPoints: 10

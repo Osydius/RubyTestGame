@@ -1,0 +1,6 @@
+---
+badge_name: "Write 50 Tests"
+badge_grade: silver
+badge_icon: silverBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Have at least 50 tests"
+badge_description_short: "Write 50 tests"

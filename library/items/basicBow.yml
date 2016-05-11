@@ -1,6 +1,7 @@
 ---
-item_name: basicBow
+item_name: Basic Bow
 item_type: weapon
+item_icon: basicBow.png
 stats:
   attack: 3
   defense: 1

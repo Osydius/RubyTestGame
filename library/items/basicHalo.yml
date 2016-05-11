@@ -1,0 +1,11 @@
+---
+item_name: Basic Halo
+item_type:
+item_icon: basicHalo.png
+stats:
+  attack: 1
+  defense: 1
+description: A gift from the heavens that assists in battles
+price: 50
+requirements:
+  abilityPoints: 0

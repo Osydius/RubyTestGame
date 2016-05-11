@@ -1,0 +1,6 @@
+---
+badge_name: "90% Coverage"
+badge_grade: bronze
+badge_icon: bronzeBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Aim to get 90% coverage with your tests"
+badge_description_short: "Get 90% coverage."

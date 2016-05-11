@@ -13,7 +13,7 @@ class AvatarStore < FXDialogBox
     #Add character image
     characterFrame = FXHorizontalFrame.new(self, :opts => LAYOUT_FILL_X)
 
-    characterLogo = FXPNGImage.new(getApp(), File.open(characterPicturePath + "/" + @user["user_character"] + ".png", "rb").read, :opts => IMAGE_KEEP)
+    characterLogo = FXPNGImage.new(getApp(), File.open(characterPicturePath + "/" + @user["user_character"].capitalize + ".png", "rb").read, :opts => IMAGE_KEEP)
     characterLogo.scale(75, 75)
     characterImage = FXImageFrame.new(characterFrame, characterLogo, LAYOUT_SIDE_TOP)
     characterImage.image = characterLogo
@@ -65,18 +65,18 @@ class AvatarStore < FXDialogBox
                 end
             end
 
-            displayWeapons(itemFrame, itemWeapons, window)
+            displayWeapons(itemFrame, itemWeapons, window, itemsPath)
             FXHorizontalSeparator.new(itemFrame)
-            displayArmours(itemFrame, itemArmours)
+            displayArmours(itemFrame, itemArmours, window, itemsPath)
             FXHorizontalSeparator.new(itemFrame)
-            displayMiscItems(itemFrame, itemMiscs)
+            displayMiscItems(itemFrame, itemMiscs, window, itemsPath)
         end
     else
         puts "Could not find the item directory"
     end
   end
 
-  def displayWeapons(itemFrame, weapons, window)
+  def displayWeapons(itemFrame, weapons, window, itemsPath)
 
     FXLabel.new(itemFrame, "Available Weapons")
     weaponScrollArea = FXScrollWindow.new(itemFrame, :opts => SCROLLERS_TRACK|VSCROLLER_NEVER|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT, :height => 75)
@@ -85,9 +85,13 @@ class AvatarStore < FXDialogBox
     weapons.each do |weapon|
         if(!checkUserHasItem(weapon))
             buttonString = weapon["item_name"] + "\n" + weapon["stats"]["attack"].to_s + "/" + weapon["stats"]["defense"].to_s + "\n Price: " + weapon["price"].to_s
-            currentButton = FXButton.new(weaponSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 50)
+            if(weapon["item_icon"] != nil)
+                buttonIcon = makeIcon(itemsPath + "/icons/" + weapon["item_icon"])
+                currentButton = FXButton.new(weaponSelectionArea, buttonString, :icon => buttonIcon, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            else
+                currentButton = FXButton.new(weaponSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            end
             currentButton.connect(SEL_COMMAND) do |sender, selector, event|
-                weaponFrame = sender.parent
                 weaponFrameChildren = sender.parent.children
                 buttonNum = 0
                 weaponFrameChildren.each do |weaponButton|
@@ -103,7 +107,7 @@ class AvatarStore < FXDialogBox
     end
   end
 
-  def displayArmours(itemFrame, armours)
+  def displayArmours(itemFrame, armours, window, itemsPath)
 
     FXLabel.new(itemFrame, "Available Armours")
     armourScrollArea = FXScrollWindow.new(itemFrame, :opts => SCROLLERS_TRACK|VSCROLLER_NEVER|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT, :height => 75)
@@ -112,7 +116,12 @@ class AvatarStore < FXDialogBox
     armours.each do |armour|
         if(!checkUserHasItem(armour))
             buttonString = armour["item_name"] + "\n" + armour["stats"]["attack"].to_s + "/" + armour["stats"]["defense"].to_s + "\n Price: " + armour["price"].to_s
-            currentButton = FXButton.new(armourSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 50)
+            if(armour["item_icon"] != nil)
+                buttonIcon = makeIcon(itemsPath + "/icons/" + armour["item_icon"])
+                currentButton = FXButton.new(armourSelectionArea, buttonString, :icon => buttonIcon, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            else
+                currentButton = FXButton.new(armourSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            end
             currentButton.connect(SEL_COMMAND) do |sender, selector, ptr|
                 puts ""
             end
@@ -120,7 +129,7 @@ class AvatarStore < FXDialogBox
     end
   end
 
-  def displayMiscItems(itemFrame, miscs)
+  def displayMiscItems(itemFrame, miscs, window, itemsPath)
 
     FXLabel.new(itemFrame, "Available Miscellaneous Items")
     miscScrollArea = FXScrollWindow.new(itemFrame, :opts => SCROLLERS_TRACK|VSCROLLER_NEVER|LAYOUT_FILL_X|LAYOUT_FIX_HEIGHT, :height => 75)
@@ -129,7 +138,12 @@ class AvatarStore < FXDialogBox
     miscs.each do |misc|
         if(!checkUserHasItem(misc))
             buttonString = misc["item_name"] + "\n" + misc["stats"]["attack"].to_s + "/" + misc["stats"]["defense"].to_s + "\n Price: " + misc["price"].to_s
-            currentButton = FXButton.new(armourSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 50)
+            if(misc["item_icon"] != nil)
+                buttonIcon = makeIcon(itemsPath + "/icons/" + misc["item_icon"])
+                currentButton = FXButton.new(miscSelectionArea, buttonString, :icon => buttonIcon, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            else
+                currentButton = FXButton.new(miscSelectionArea, buttonString, :opts => BUTTON_NORMAL|LAYOUT_FIX_HEIGHT, :height => 64)
+            end
             currentButton.connect(SEL_COMMAND) do |sender, selector, ptr|
                 puts ""
             end
@@ -147,5 +161,18 @@ class AvatarStore < FXDialogBox
     end
 
     return hasItem
+  end
+
+  def makeIcon(filename)
+    begin
+      icon = nil
+      File.open(filename, "rb") do |f|
+        icon = FXPNGIcon.new(getApp(), f.read)
+      end
+      icon.create()
+      icon
+    rescue
+      raise RuntimeError, "Couldn't load icon: #{filename}"
+    end
   end
 end

@@ -1,0 +1,11 @@
+---
+item_name: Improved Armour
+item_type: armour
+item_icon: improvedArmour.png
+stats:
+  attack: 0
+  defense: 15
+description: "An improved set of armour that will deflect larger blows"
+price: 200
+requirements:
+  abilityPoints: 7

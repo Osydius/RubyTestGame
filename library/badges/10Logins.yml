@@ -1,0 +1,6 @@
+---
+badge_name: "10 Logins"
+badge_grade: bronze
+badge_icon: bronzeBadge.png
+badge_description: "Once a user has been created, log in 10 times"
+badge_description_short: "Login 10 times."

@@ -1,0 +1,6 @@
+---
+badge_name: "Write 1 Test"
+badge_grade: bronze
+badge_icon: bronzeBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Have at least 1 test"
+badge_description_short: "Write 1 test"

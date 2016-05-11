@@ -1,6 +1,7 @@
 ---
 item_name: templateArmour
 item_type: armour
+item_icon: templateArmour.png
 stats:
   attack: 0
   defense: 1

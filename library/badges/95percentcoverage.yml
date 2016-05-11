@@ -1,0 +1,6 @@
+---
+badge_name: "95% Coverage"
+badge_grade: silver
+badge_icon: silverBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Aim to get 95% coverage with your tests"
+badge_description_short: "Get 95% coverage."

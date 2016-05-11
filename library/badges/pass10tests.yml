@@ -1,0 +1,6 @@
+---
+badge_name: "Pass 10 Tests"
+badge_grade: bronze
+badge_icon: bronzeBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Have at least 10 tests pass"
+badge_description_short: "Pass 10 tests"

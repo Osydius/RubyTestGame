@@ -1,6 +1,7 @@
 ---
 item_name: templateMisc
 item_type: nil
+item_icon: templateMisc.png
 stats:
   attack: 0
   defense: 0

@@ -1,6 +1,7 @@
 ---
-item_name: basicArmour
+item_name: Basic Armour
 item_type: armour
+item_icon: basicArmour.png
 stats:
   attack: 0
   defense: 10

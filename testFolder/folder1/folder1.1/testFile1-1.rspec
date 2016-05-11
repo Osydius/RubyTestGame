@@ -1,0 +1,10 @@
+require_relative 'testFile1-1.rb'
+
+RSpec.describe TestFile1, "#test" do
+  context "testing test variables" do
+    it "getting test variable" do
+      testClass = TestFile1.new()
+      expect(testClass.getTestVariable).to eq 0
+    end
+  end
+end

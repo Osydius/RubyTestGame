@@ -7,7 +7,7 @@ class EditUserDialog < FXDialogBox
   attr_accessor :newUserCharacter
 
 	def initialize(owner, currentUser, characterIcons)
-		editUserWindow = super(owner, "Edit User", DECOR_ALL|DECOR_BORDER, :width => 750, :height => 750)
+		editUserWindow = super(owner, "Edit User", DECOR_ALL|DECOR_BORDER, :width => 1500, :height => 750)
 
 		userNameField = FXTextField.new(self, 50)
 		userNameField.text = currentUser["user_name"]

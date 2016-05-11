@@ -1,0 +1,6 @@
+---
+badge_name: "100% Coverage"
+badge_grade: gold
+badge_icon: goldBadge.png
+badge_description: "Create a ruby file and an rpsec file. Select the Run Tests button to run the test suite. Aim to get 100% coverage with your tests"
+badge_description_short: "Get 100% coverage."

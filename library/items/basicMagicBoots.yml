@@ -1,0 +1,11 @@
+---
+item_name: Basic Magic Boots
+item_type: armour
+item_icon: basicMagicalBoots.png
+stats:
+  attack: 0
+  defense: 3
+description: "A basic pairs of boots that keep the user comfortable while summoning the elements"
+price: 50
+requirements:
+  abilityPoints: 2
